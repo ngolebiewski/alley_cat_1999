@@ -1,11 +1,22 @@
 package main
 
 import (
+	_ "image/png"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
+
+var test_img *ebiten.Image
+
+func init() {
+	var err error
+	test_img, _, err = ebitenutil.NewImageFromFile("art/aseprite_files/random_test_img.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 
 type Game struct {
 	titleImage *ebiten.Image
@@ -38,6 +49,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	)
 
 	screen.DrawImage(g.titleImage, op)
+
+	ti_op := &ebiten.DrawImageOptions{}
+	ti_op.GeoM.Translate(200.0, 50.0)
+	screen.DrawImage(test_img, ti_op)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
