@@ -54,7 +54,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 func main() {
 	ebiten.SetWindowSize(640, 480)
-	ebiten.SetWindowTitle("Alley Cat 1999\nPress Space to Start")
+	ebiten.SetWindowTitle("Alley Cat 1999")
 
 	game := NewGame()
 	if err := ebiten.RunGame(game); err != nil {

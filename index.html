@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<script src="wasm_exec.js"></script>
+<title>Alley Cat 1999</title>
+<script>
+const go = new Go();
+WebAssembly.instantiateStreaming(fetch("alley_cat_1999.wasm"), go.importObject).then(result => {
+    go.run(result.instance);
+});
+</script>
