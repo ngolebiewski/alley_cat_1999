@@ -6,9 +6,17 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 var test_img *ebiten.Image
+
+// Starting up a State Machine here, to switch between scenes in the game
+// Title -> Race ( + stack for cutscenes, map, rooms, etc. ) -> End Scene
+type Scene interface {
+	Update() error
+	Draw(screen *ebiten.Image)
+}
 
 func init() {
 	var err error
@@ -19,40 +27,25 @@ func init() {
 }
 
 type Game struct {
+	scene      Scene
 	titleImage *ebiten.Image
 }
 
-func NewGame() *Game {
-	img, err := loadImage("art/ac99_title.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return &Game{
-		titleImage: img,
-	}
-}
-
 func (g *Game) Update() error {
-	return nil
+	if inpututil.IsKeyJustPressed(ebiten.KeyF) {
+		ebiten.SetFullscreen(!ebiten.IsFullscreen())
+	}
+	return g.scene.Update()
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, "Alley Cat 1999")
-	op := &ebiten.DrawImageOptions{}
+	g.scene.Draw(screen)
+}
 
-	// Center the image
-	size := g.titleImage.Bounds().Size()
-	op.GeoM.Translate(
-		float64((320-size.X)/2),
-		float64((240-size.Y)/2),
-	)
-
-	screen.DrawImage(g.titleImage, op)
-
-	ti_op := &ebiten.DrawImageOptions{}
-	ti_op.GeoM.Translate(200.0, 50.0)
-	screen.DrawImage(test_img, ti_op)
+func NewGame() *Game {
+	g := &Game{}
+	g.scene = NewTitleScene(g)
+	return g
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
@@ -61,7 +54,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 func main() {
 	ebiten.SetWindowSize(640, 480)
-	ebiten.SetWindowTitle("Alley Cat 1999")
+	ebiten.SetWindowTitle("Alley Cat 1999\nPress Space to Start")
 
 	game := NewGame()
 	if err := ebiten.RunGame(game); err != nil {
