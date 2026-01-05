@@ -35,3 +35,9 @@ https://ebitengine.org/en/documents/webassembly.html
 
 **Notes:**
 - 1/4/2026: Minimal shell of game runs on Netlify (title and scene changes)! [alleycat1999.netlify.app](https://alleycat1999.netlify.app/)
+
+**First Go at the Sprite Sheet**
+- 16x16 tiles, but I think I will need to have a 32x32 world and will x2.
+- WAY to bright. Will either convert to grayscale and recolor or add in a shader on top.
+
+![Sprite Sheet of NYC buildings and street markings](/art/aseprite_files/nyc_spritesheet_wip.png)
