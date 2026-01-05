@@ -39,10 +39,10 @@ func elapsedTime(h *HUDOverlay) string {
 	h_val := int(elapsed.Hours())
 	m_val := int(elapsed.Minutes()) % 60
 	s_val := int(elapsed.Seconds()) % 60
-	ms_val := elapsed.Microseconds() % 100 // Microseconds (6 digits)
+	// ms_val := elapsed.Microseconds() % 100 // Microseconds (6 digits) --> REMOVED, FLICK BY TOO QUICKLY ON WASM
 
 	// Format: HH:MM:SS:µµ
-	timeStr := fmt.Sprintf("TIME %02d:%02d:%02d:%02d", h_val, m_val, s_val, ms_val)
+	timeStr := fmt.Sprintf("TIME %02d:%02d:%02d", h_val, m_val, s_val)
 	return timeStr
 }
 

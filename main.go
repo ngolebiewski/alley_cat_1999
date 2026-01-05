@@ -5,26 +5,20 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-var test_img *ebiten.Image
+var isMobile = false
+
+func init() {
+	isMobile = isMobileBrowser()
+}
 
 // Starting up a State Machine here, to switch between scenes in the game
 // Title -> Race ( + stack for cutscenes, map, rooms, etc. ) -> End Scene
 type Scene interface {
 	Update() error
 	Draw(screen *ebiten.Image)
-}
-
-// init is the WORST idea don't use
-func init() {
-	var err error
-	test_img, _, err = ebitenutil.NewImageFromFile("art/aseprite_files/random_test_img.png")
-	if err != nil {
-		log.Fatal(err)
-	}
 }
 
 type Game struct {
@@ -53,7 +47,7 @@ func NewGame() *Game {
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return 320, 240
+	return screenWidth, screenHeight
 }
 
 func main() {

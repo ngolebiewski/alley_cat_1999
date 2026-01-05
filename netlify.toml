@@ -5,4 +5,3 @@
   command = "cp $(go env GOROOT)/lib/wasm/wasm_exec.js . && env GOOS=js GOARCH=wasm go build -o alley_cat_1999.wasm github.com/ngolebiewski/alley_cat_1999"
   
   publish = "."
-

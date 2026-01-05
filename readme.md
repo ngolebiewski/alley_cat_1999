@@ -33,6 +33,8 @@ https://ebitengine.org/en/documents/webassembly.html
 1. env GOOS=js GOARCH=wasm go build -o alley_cat_1999.wasm github.com/ngolebiewski/alley_cat_1999
 2. cp $(go env GOROOT)/lib/wasm/wasm_exec.js
 
+That works -- but a better way for when this is deplyed on Netlify is to make a netlify.toml and have Netlify do the WASM build, and then clear out the wasm files from our own repo.
+
 **Notes:**
 - 1/4/2026: Minimal shell of game runs on Netlify (title and scene changes)! [alleycat1999.netlify.app](https://alleycat1999.netlify.app/)
 
@@ -41,3 +43,17 @@ https://ebitengine.org/en/documents/webassembly.html
 - WAY to bright. Will either convert to grayscale and recolor or add in a shader on top.
 
 ![Sprite Sheet of NYC buildings and street markings](/art/aseprite_files/nyc_spritesheet_wip.png)
+
+### Bicyclist Sprite Sheet
+
+Action,Direction,Frames
+Biking,Right/Left,"0, 1, 2 (Flipped for Left)"
+Biking,Up,"4, 5"
+Biking,Down,"6, 7"
+Idle (Bike),Any,3
+Walking,Right/Left,"8, 9 (Flipped for Left)"
+Walking,Up,"10, 11"
+Walking,Down,"11, 12"
+Idle (Walk),Right/Left,13
+Idle (Walk),Up,14
+Idle (Walk),Down,15
