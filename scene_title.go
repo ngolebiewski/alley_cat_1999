@@ -13,11 +13,10 @@ type TitleScene struct {
 }
 
 func NewTitleScene(game *Game) *TitleScene {
-	img, _ := loadImage("art/ac99_title.png")
 
 	return &TitleScene{
 		game: game,
-		img:  img,
+		img:  game.assets.TitleImage,
 	}
 }
 

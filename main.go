@@ -18,6 +18,7 @@ type Scene interface {
 	Draw(screen *ebiten.Image)
 }
 
+// init is the WORST idea don't use
 func init() {
 	var err error
 	test_img, _, err = ebitenutil.NewImageFromFile("art/aseprite_files/random_test_img.png")
@@ -27,8 +28,8 @@ func init() {
 }
 
 type Game struct {
-	scene      Scene
-	titleImage *ebiten.Image
+	scene  Scene
+	assets *Assets
 }
 
 func (g *Game) Update() error {
@@ -43,7 +44,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func NewGame() *Game {
-	g := &Game{}
+	assets := LoadAssets()
+	g := &Game{
+		assets: assets,
+	}
 	g.scene = NewTitleScene(g)
 	return g
 }

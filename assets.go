@@ -8,9 +8,9 @@ import (
 
 type Assets struct {
 	TitleImage *ebiten.Image
+	BikerImage *ebiten.Image
 
 	// future
-	// BikerImage *ebiten.Image
 	// NYCSpriteSheet *sprites.AsepriteSheet
 }
 
@@ -20,7 +20,13 @@ func LoadAssets() *Assets {
 		log.Fatal(err)
 	}
 
+	biker, err := loadImage("art/aseprite_files/biker.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return &Assets{
 		TitleImage: title,
+		BikerImage: biker,
 	}
 }
