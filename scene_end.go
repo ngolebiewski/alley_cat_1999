@@ -21,5 +21,5 @@ func (s *EndScene) Update() error {
 }
 
 func (s *EndScene) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, "RACE OVER\nPress Enter")
+	ebitenutil.DebugPrint(screen, "RACE OVER\n\nBest Times\nCC 01:10:18\nAL 01:10:19\nNG 01:30:45\nHH 1:34:12\nDFL: DT\n\nPress Enter")
 }
