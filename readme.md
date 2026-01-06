@@ -43,17 +43,3 @@ That works -- but a better way for when this is deplyed on Netlify is to make a 
 - WAY to bright. Will either convert to grayscale and recolor or add in a shader on top.
 
 ![Sprite Sheet of NYC buildings and street markings](/art/aseprite_files/nyc_spritesheet_wip.png)
-
-### Bicyclist Sprite Sheet
-
-Action,Direction,Frames
-Biking,Right/Left,"0, 1, 2 (Flipped for Left)"
-Biking,Up,"4, 5"
-Biking,Down,"6, 7"
-Idle (Bike),Any,3
-Walking,Right/Left,"8, 9 (Flipped for Left)"
-Walking,Up,"10, 11"
-Walking,Down,"11, 12"
-Idle (Walk),Right/Left,13
-Idle (Walk),Up,14
-Idle (Walk),Down,15
