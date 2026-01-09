@@ -128,7 +128,7 @@ type RaceScene struct {
 	hud    *HUDOverlay
 	player *Player
 	paused bool
-	stick  joystick // used by input.go
+	stick  joystick // used by input.go for mobile/touch screen devices only its a virtual joystick!
 }
 
 func NewRaceScene(game *Game) *RaceScene {
@@ -140,7 +140,9 @@ func NewRaceScene(game *Game) *RaceScene {
 }
 
 func (s *RaceScene) Update() error {
+	StartRaceMusic()
 	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+		StopRaceMusic()
 		s.game.scene = NewEndScene(s.game)
 		return nil
 	}

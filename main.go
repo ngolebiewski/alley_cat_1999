@@ -8,6 +8,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
+// This just checks to see if the virtual joystick gets appended to the UI on touch screens/mobile for WASM in browser
+// See input_desktop.go and input_mobile.go
 var isMobile = false
 
 func init() {
@@ -23,7 +25,7 @@ type Scene interface {
 
 type Game struct {
 	scene  Scene
-	assets *Assets
+	assets *Assets // ALL game assets are embeded for WASM builds
 }
 
 func (g *Game) Update() error {
