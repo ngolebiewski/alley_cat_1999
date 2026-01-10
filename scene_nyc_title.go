@@ -8,34 +8,34 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-type TitleScene struct {
+type TitleSceneNYC struct {
 	game     *Game
 	img      *ebiten.Image
 	touchIDs []ebiten.TouchID
 }
 
-func NewTitleScene(game *Game) *TitleScene {
+func NewTitleSceneNYC(game *Game) *TitleSceneNYC {
 
-	return &TitleScene{
+	return &TitleSceneNYC{
 		game: game,
-		img:  game.assets.TitleImage,
+		img:  game.assets.TitleImageNYC,
 	}
 }
 
-func (s *TitleScene) Update() error {
-	// Space → Stage Title
+func (s *TitleSceneNYC) Update() error {
+	// Space → start race
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) {
-		s.game.scene = NewTitleSceneNYC(s.game)
+		s.game.scene = NewRaceScene(s.game)
 	}
 	s.touchIDs = inpututil.AppendJustPressedTouchIDs(s.touchIDs[:0])
 	if len(s.touchIDs) > 0 {
-		s.game.scene = NewTitleSceneNYC(s.game)
+		s.game.scene = NewRaceScene(s.game)
 	}
 	return nil
 }
 
-func (s *TitleScene) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, "Alley Cat 1999\nPress Space or Tap to Start")
+func (s *TitleSceneNYC) Draw(screen *ebiten.Image) {
+	ebitenutil.DebugPrint(screen, "STAGE 1\nPress Space or Tap to Start")
 
 	op := &ebiten.DrawImageOptions{}
 	size := s.img.Bounds().Size()

@@ -8,9 +8,10 @@ import (
 )
 
 type Assets struct {
-	TitleImage   *ebiten.Image
-	BikerImage   *ebiten.Image
-	TilesetImage *ebiten.Image
+	TitleImage    *ebiten.Image
+	TitleImageNYC *ebiten.Image
+	BikerImage    *ebiten.Image
+	TilesetImage  *ebiten.Image
 
 	// future
 	// NYCSpriteSheet *sprites.AsepriteSheet //??? Have it as TilesetImage now
@@ -19,6 +20,11 @@ type Assets struct {
 // NOTE: LOOK AT EMBED.GO to embed this files in so WASM works!
 func LoadAssets() *Assets {
 	title, err := loadImage("art/ac99_title.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	nycTitle, err := loadImage("art/aseprite_files/nyc_title.png")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -34,8 +40,9 @@ func LoadAssets() *Assets {
 	}
 
 	return &Assets{
-		TitleImage:   title,
-		BikerImage:   biker,
-		TilesetImage: tileset,
+		TitleImage:    title,
+		TitleImageNYC: nycTitle,
+		BikerImage:    biker,
+		TilesetImage:  tileset,
 	}
 }

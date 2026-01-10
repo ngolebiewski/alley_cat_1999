@@ -70,6 +70,12 @@ REFOCUS
 5. Start cut scene for NYC with twin towers and some clouds parallax...
 
 
+## Sat Jan 10, 2026 
+
+- Added in a 'level' scene title in between the game title and the bike race environment scene. A lot of duplication between scenes, so there should be a title_scene interface in the future. Also switched the key pressed to just key pressed so 'one' click wouldn't skip over the NYC title scene so quickly you can't even see it as a mere human. 
+    - NYC title todo: pixel art of NYC with twin towers and some clouds over new york harbor and some parallax movemenet. There needs to be an orange Staten Island Ferry to set the scene. 
+    - Note: to add in an image, its relative location goes into 'embed.go' and then added to th Assets struct and then into the LoadAssets function to make it available.
+    - TODO: get all the titles in one spritesheet and just select a sub image from that. 
 
 
 
