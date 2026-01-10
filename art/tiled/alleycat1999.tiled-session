@@ -6,7 +6,11 @@
     "activeFile": "",
     "expandedProjectPaths": [
     ],
+    "exportAsImage.useCurrentScale": true,
     "fileStates": {
+        "NEW_nyc_spritesheet-Recovered.tsx": {
+            "scaleInEditor": 3
+        },
         "nyc_1.tmx": {
             "scale": 0.6380833333333332,
             "selectedLayer": 3,
@@ -20,11 +24,11 @@
                 7,
                 8
             ],
-            "scale": 0.75,
+            "scale": 3,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 344.6666666666666,
-                "y": 961.3333333333333
+                "x": 467.83333333333326,
+                "y": 262.3333333333333
             }
         }
     },
@@ -40,6 +44,7 @@
     ],
     "project": "alleycat1999.tiled-project",
     "recentFiles": [
+        "NEW_nyc_spritesheet-Recovered.tsx",
         "nyc_1.tmx"
     ],
     "tileset.lastUsedFormat": "tsx",
