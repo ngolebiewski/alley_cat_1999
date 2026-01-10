@@ -9,19 +9,21 @@ import (
 	"github.com/ngolebiewski/alley_cat_1999/tiled"
 )
 
+// TaxiSpawn represents a spawn point for a taxi
 type TaxiSpawn struct {
-	x, y      float64
-	direction string
+	X, Y      float64
+	Direction string
 }
 
+// TaxiManager manages all taxis and particle effects
 type TaxiManager struct {
-	taxis  []*Taxi
-	scale  float64
-	worldW float64
-	worldH float64
+	taxis     []*Taxi
+	scale     float64
+	worldW    float64
+	worldH    float64
+	particles *ParticleSystem // for crash effects
 }
 
-// NewTaxiManager initializes taxis and sets world size
 // NewTaxiManager initializes taxis and sets world size
 func NewTaxiManager(tileset *ebiten.Image, scale float64, worldW, worldH float64, spawnMap *tiled.Map) *TaxiManager {
 	tm := &TaxiManager{
@@ -45,12 +47,15 @@ func NewTaxiManager(tileset *ebiten.Image, scale float64, worldW, worldH float64
 		subImageRect(tileset, tileRectFromTwoVertTiles(22, 32, tileSize, tilesetWidth)),
 	}
 
-	// Extract taxi spawns from the Tiled map
-	tiledspawns := tiled.ExtractTaxiSpawns(spawnMap)
-	fmt.Println("Taxi spawns:", tiledspawns)
+	// Initialize stub particle system
+	tm.particles = &ParticleSystem{}
 
-	// Create taxis at spawn points from the map
-	for _, s := range tiledspawns {
+	// Extract taxi spawns from the Tiled map
+	tiledSpawns := tiled.ExtractTaxiSpawns(spawnMap)
+	fmt.Println("Taxi spawns:", tiledSpawns)
+
+	// Create taxis at spawn points
+	for _, s := range tiledSpawns {
 		var frames []*ebiten.Image
 		if s.Direction == "UP" {
 			frames = upFrames
@@ -128,16 +133,18 @@ func subImageRect(tileset *ebiten.Image, rect image.Rectangle) *ebiten.Image {
 	return tileset.SubImage(rect).(*ebiten.Image)
 }
 
-// Update all taxis
-func (tm *TaxiManager) Update() {
+// Update all taxis and particles (pass player for avoidance/collisions)
+func (tm *TaxiManager) Update(player *Player) {
 	for _, t := range tm.taxis {
-		t.Update()
+		t.Update(player)
 	}
+	tm.particles.Update()
 }
 
-// Draw all taxis
+// Draw all taxis and particles
 func (tm *TaxiManager) Draw(screen *ebiten.Image, cam *Camera) {
 	for _, t := range tm.taxis {
-		t.Draw(screen, tm.scale, cam)
+		t.Draw(screen, cam)
 	}
+	tm.particles.Draw(screen, screen) // stub, just pass screen twice for now
 }

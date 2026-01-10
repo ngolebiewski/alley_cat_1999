@@ -135,7 +135,7 @@ func (s *RaceScene) Update() error {
 	s.movePlayerWithCollisionGrid()
 	s.clampPlayer()
 
-	s.taxiManager.Update()
+	s.taxiManager.Update(s.player)
 
 	// 3. Update Camera
 	px, py := s.player.Center()
