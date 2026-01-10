@@ -121,6 +121,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+
+	"github.com/ngolebiewski/alley_cat_1999/tiled"
 )
 
 type RaceScene struct {
@@ -129,13 +131,28 @@ type RaceScene struct {
 	player *Player
 	paused bool
 	stick  joystick // used by input.go for mobile/touch screen devices only its a virtual joystick!
+
+	mapData *tiled.Map
+	mapDraw *tiled.Renderer
 }
 
 func NewRaceScene(game *Game) *RaceScene {
+	m, err := tiled.LoadMap("assets/nyc_1_TEST..tmj")
+	if err != nil {
+		panic(err)
+	}
+
+	renderer := tiled.NewRenderer(
+		m,
+		game.assets.TilesetImage, // nyc_tileset.png
+		2.0,                      // 16px → 32px
+	)
 	return &RaceScene{
-		game:   game,
-		hud:    NewHUDOverlay(),
-		player: NewPlayer(game.assets.BikerImage, 160, 120),
+		game:    game,
+		hud:     NewHUDOverlay(),
+		player:  NewPlayer(game.assets.BikerImage, 160, 120),
+		mapData: m,
+		mapDraw: renderer,
 	}
 }
 
@@ -185,6 +202,10 @@ func (s *RaceScene) Draw(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{20, 20, 20, 255})
 	ebitenutil.DebugPrintAt(screen, "Press ESC to exit | 'F' for Full Screen\n'SPACE' to flip vert/horiz | 'B' to get on/off bike", 0, screenHeight-30)
 
+	// MAP FIRST
+	s.mapDraw.Draw(screen)
+
+	//ENTITIES
 	s.player.Draw(screen)
 	s.hud.Draw(screen)
 

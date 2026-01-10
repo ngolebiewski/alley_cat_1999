@@ -4,16 +4,19 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 type Assets struct {
-	TitleImage *ebiten.Image
-	BikerImage *ebiten.Image
+	TitleImage   *ebiten.Image
+	BikerImage   *ebiten.Image
+	TilesetImage *ebiten.Image
 
 	// future
-	// NYCSpriteSheet *sprites.AsepriteSheet
+	// NYCSpriteSheet *sprites.AsepriteSheet //??? Have it as TilesetImage now
 }
 
+// NOTE: LOOK AT EMBED.GO to embed this files in so WASM works!
 func LoadAssets() *Assets {
 	title, err := loadImage("art/ac99_title.png")
 	if err != nil {
@@ -25,8 +28,14 @@ func LoadAssets() *Assets {
 		log.Fatal(err)
 	}
 
+	tileset, _, err := ebitenutil.NewImageFromFile("assets/NEW_nyc_spritesheet-Recovered.png")
+	if err != nil {
+		panic(err)
+	}
+
 	return &Assets{
-		TitleImage: title,
-		BikerImage: biker,
+		TitleImage:   title,
+		BikerImage:   biker,
+		TilesetImage: tileset,
 	}
 }
