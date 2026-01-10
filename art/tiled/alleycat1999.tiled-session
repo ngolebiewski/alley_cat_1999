@@ -12,11 +12,15 @@
             "scaleInEditor": 3
         },
         "nyc_1.tmx": {
-            "scale": 0.6380833333333332,
-            "selectedLayer": 3,
+            "expandedGroupLayers": [
+                7,
+                8
+            ],
+            "scale": 0.5,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 800.0522397805931,
-                "y": 600.2350790126683
+                "x": -26,
+                "y": 1091
             }
         },
         "nyc_1_TEST.tmx": {

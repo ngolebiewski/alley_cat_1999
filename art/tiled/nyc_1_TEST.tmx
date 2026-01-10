@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="57" height="28" tilewidth="16" tileheight="16" infinite="0" nextlayerid="9" nextobjectid="1">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="57" height="28" tilewidth="16" tileheight="16" infinite="0" nextlayerid="10" nextobjectid="11">
  <editorsettings>
-  <export format="json"/>
+  <export target="tile_maps/nyc_1_TEST..tmj" format="json"/>
  </editorsettings>
  <tileset firstgid="1" source="NEW_nyc_spritesheet-Recovered.tsx"/>
  <group id="8" name="Roads and Sidewalks">
@@ -200,4 +200,60 @@
 </data>
   </layer>
  </group>
+ <objectgroup id="9" name="Spawns">
+  <object id="1" name="taxi" x="890" y="57">
+   <properties>
+    <property name="direction" value="LEFT"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="3" name="taxi" x="696" y="89">
+   <properties>
+    <property name="direction" value="LEFT"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="4" name="taxi" x="418" y="56.5">
+   <properties>
+    <property name="direction" value="LEFT"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="5" name="taxi" x="23.5" y="50.5">
+   <properties>
+    <property name="direction" value="LEFT"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="6" name="taxi" x="167" y="78">
+   <properties>
+    <property name="direction" value="LEFT"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="7" name="taxi" x="313" y="395.5">
+   <properties>
+    <property name="direction" value="RIGHT"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="8" name="taxi" x="723" y="414.5">
+   <properties>
+    <property name="direction" value="RIGHT"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="9" name="taxi" x="453" y="66">
+   <properties>
+    <property name="direction" value="LEFT"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="10" name="taxi" x="45" y="391">
+   <properties>
+    <property name="direction" value="RIGHT"/>
+   </properties>
+   <point/>
+  </object>
+ </objectgroup>
 </map>

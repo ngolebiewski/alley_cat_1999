@@ -11,6 +11,7 @@ type Assets struct {
 	TitleImage    *ebiten.Image
 	TitleImageNYC *ebiten.Image
 	BikerImage    *ebiten.Image
+	PeopleImage   *ebiten.Image
 	TilesetImage  *ebiten.Image
 
 	// future
@@ -34,6 +35,11 @@ func LoadAssets() *Assets {
 		log.Fatal(err)
 	}
 
+	people, err := loadImage("art/aseprite_files/people.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	tileset, _, err := ebitenutil.NewImageFromFile("assets/NEW_nyc_spritesheet-Recovered.png")
 	if err != nil {
 		panic(err)
@@ -43,6 +49,7 @@ func LoadAssets() *Assets {
 		TitleImage:    title,
 		TitleImageNYC: nycTitle,
 		BikerImage:    biker,
+		PeopleImage:   people,
 		TilesetImage:  tileset,
 	}
 }

@@ -16,6 +16,7 @@ import (
 //go:embed art/ac99_title.png
 //go:embed art/aseprite_files/nyc_title.png
 //go:embed art/aseprite_files/biker.png
+//go:embed art/aseprite_files/people.png
 //go:embed art/aseprite_files/biker.json
 //go:embed assets/**
 

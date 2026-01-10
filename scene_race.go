@@ -25,11 +25,14 @@ type RaceScene struct {
 	mapData *tiled.Map
 	mapDraw *tiled.Renderer
 	collide *tiled.CollisionGrid
+
+	// CPU entities
+	taxiManager *TaxiManager
 }
 
 func NewRaceScene(game *Game) *RaceScene {
-	// m, err := tiled.LoadMapFS(embeddedAssets, "assets/nyc_1_TEST..tmj")
-	m, err := tiled.LoadMapFS(embeddedAssets, "assets/nyc_1..tmj")
+	m, err := tiled.LoadMapFS(embeddedAssets, "assets/nyc_1_TEST..tmj")
+	// m, err := tiled.LoadMapFS(embeddedAssets, "assets/nyc_1..tmj")
 	if err != nil {
 		panic(err)
 	}
@@ -62,6 +65,9 @@ func NewRaceScene(game *Game) *RaceScene {
 
 	scene.worldW = float64(worldW)
 	scene.worldH = float64(worldH)
+	// scene.taxiManager.worldW = scene.worldW
+	// scene.taxiManager.worldH = scene.worldH
+	scene.taxiManager = NewTaxiManager(game.assets.TilesetImage, 2.0, scene.worldW, scene.worldH, m) // scale 2x
 	scene.collide = tiled.BuildCollisionGrid(m)
 
 	return scene
@@ -129,6 +135,8 @@ func (s *RaceScene) Update() error {
 	s.movePlayerWithCollisionGrid()
 	s.clampPlayer()
 
+	s.taxiManager.Update()
+
 	// 3. Update Camera
 	px, py := s.player.Center()
 	s.camera.Follow(px, py)
@@ -149,6 +157,9 @@ func (s *RaceScene) Draw(screen *ebiten.Image) {
 	//ENTITIES
 	// s.player.Draw(screen) // this was the non camera way to draw
 	s.player.DrawWithCamera(screen, s.camera)
+
+	s.taxiManager.Draw(screen, s.camera)
+
 	s.hud.Draw(screen)
 	// s.drawCollisionDebug(screen)
 
