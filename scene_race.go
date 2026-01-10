@@ -28,7 +28,8 @@ type RaceScene struct {
 }
 
 func NewRaceScene(game *Game) *RaceScene {
-	m, err := tiled.LoadMapFS(embeddedAssets, "assets/nyc_1_TEST..tmj")
+	// m, err := tiled.LoadMapFS(embeddedAssets, "assets/nyc_1_TEST..tmj")
+	m, err := tiled.LoadMapFS(embeddedAssets, "assets/nyc_1..tmj")
 	if err != nil {
 		panic(err)
 	}
@@ -44,7 +45,7 @@ func NewRaceScene(game *Game) *RaceScene {
 	scene := &RaceScene{
 		game:    game,
 		hud:     NewHUDOverlay(),
-		player:  NewPlayer(game.assets.BikerImage, 160, 120, 32, 32),
+		player:  NewPlayer(game.assets.BikerImage, 160, 400, 32, 32),
 		mapData: m,
 		mapDraw: renderer,
 	}
