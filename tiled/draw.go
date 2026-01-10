@@ -28,20 +28,24 @@ func NewRenderer(m *Map, tileset *ebiten.Image, scale float64) *Renderer {
 	}
 }
 
-func (r *Renderer) Draw(screen *ebiten.Image) {
+func (r *Renderer) Draw(screen *ebiten.Image, camX, camY float64) {
 	for _, layer := range r.Map.Layers {
-		r.drawLayer(screen, layer)
+		r.drawLayer(screen, layer, camX, camY)
 	}
 }
 
-func (r *Renderer) drawLayer(screen *ebiten.Image, layer Layer) {
+func (r *Renderer) drawLayer(
+	screen *ebiten.Image,
+	layer Layer,
+	camX, camY float64,
+) {
 	if !layer.Visible {
 		return
 	}
 
 	if layer.Type == "group" {
 		for _, sub := range layer.Layers {
-			r.drawLayer(screen, sub)
+			r.drawLayer(screen, sub, camX, camY)
 		}
 		return
 	}
@@ -89,8 +93,8 @@ func (r *Renderer) drawLayer(screen *ebiten.Image, layer Layer) {
 
 		op.GeoM.Scale(r.Scale, r.Scale)
 		op.GeoM.Translate(
-			float64(x*r.Map.TileWidth)*r.Scale,
-			float64(y*r.Map.TileHeight)*r.Scale,
+			float64(x*r.Map.TileWidth)*r.Scale-camX,
+			float64(y*r.Map.TileHeight)*r.Scale-camY,
 		)
 
 		screen.DrawImage(tile, op)

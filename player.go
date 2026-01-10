@@ -16,6 +16,7 @@ const (
 
 type Player struct {
 	x, y       float64
+	w, h       int
 	velX, velY float64
 	state      BikerState
 	dir        int // 0: Down, 1: Up, 2: Left, 3: Right
@@ -24,13 +25,15 @@ type Player struct {
 	img        *ebiten.Image
 }
 
-func NewPlayer(img *ebiten.Image, startX, startY float64) *Player {
+func NewPlayer(img *ebiten.Image, startX, startY float64, width, height int) *Player {
 	return &Player{
 		img:   img,
 		x:     startX,
 		y:     startY,
 		state: StateRiding,
 		dir:   3, // Facing Right
+		w:     width,
+		h:     height,
 	}
 }
 
@@ -165,4 +168,26 @@ func (p *Player) Draw(screen *ebiten.Image) {
 	op.GeoM.Translate(p.x, p.y)
 	sx := p.frame * size
 	screen.DrawImage(p.img.SubImage(image.Rect(sx, 0, sx+size, size)).(*ebiten.Image), op)
+}
+
+func (p *Player) DrawWithCamera(screen *ebiten.Image, cam *Camera) {
+	const size = 32
+	op := &ebiten.DrawImageOptions{}
+
+	if p.dir == 2 {
+		op.GeoM.Scale(-1, 1)
+		op.GeoM.Translate(size, 0)
+	}
+
+	op.GeoM.Translate(p.x-cam.X, p.y-cam.Y)
+
+	sx := p.frame * size
+	screen.DrawImage(
+		p.img.SubImage(image.Rect(sx, 0, sx+size, size)).(*ebiten.Image),
+		op,
+	)
+}
+
+func (p *Player) Center() (float64, float64) {
+	return p.x + float64(p.w/2), p.y + float64(p.h/2)
 }
