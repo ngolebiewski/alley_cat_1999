@@ -2,11 +2,11 @@ package tiled
 
 import (
 	"encoding/json"
-	"os"
+	"io/fs"
 )
 
-func LoadMap(path string) (*Map, error) {
-	b, err := os.ReadFile(path)
+func LoadMapFS(fsys fs.FS, path string) (*Map, error) {
+	b, err := fs.ReadFile(fsys, path)
 	if err != nil {
 		return nil, err
 	}

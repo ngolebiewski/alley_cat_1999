@@ -137,7 +137,7 @@ type RaceScene struct {
 }
 
 func NewRaceScene(game *Game) *RaceScene {
-	m, err := tiled.LoadMap("assets/nyc_1_TEST..tmj")
+	m, err := tiled.LoadMapFS(embeddedAssets, "assets/nyc_1_TEST..tmj")
 	if err != nil {
 		panic(err)
 	}
