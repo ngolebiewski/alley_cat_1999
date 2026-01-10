@@ -16,7 +16,7 @@ const (
 
 type Player struct {
 	x, y       float64
-	w, h       int
+	w, h       float64
 	velX, velY float64
 	state      BikerState
 	dir        int // 0: Down, 1: Up, 2: Left, 3: Right
@@ -25,7 +25,7 @@ type Player struct {
 	img        *ebiten.Image
 }
 
-func NewPlayer(img *ebiten.Image, startX, startY float64, width, height int) *Player {
+func NewPlayer(img *ebiten.Image, startX, startY float64, width, height float64) *Player {
 	return &Player{
 		img:   img,
 		x:     startX,
@@ -109,6 +109,87 @@ func (p *Player) Update(inputX, inputY float64, toggleAxis, toggleMount bool) {
 	}
 
 	p.updateAnimation(moving)
+}
+
+func (p *Player) UpdateInput(inputX, inputY float64, toggleAxis, toggleMount bool) {
+	const accel = 0.2
+	const friction = 0.92
+	const walkSpeed = 1.2
+
+	// 1. Handle Mounting/Dismounting
+	if toggleMount {
+		speed := math.Sqrt(p.velX*p.velX + p.velY*p.velY)
+		if speed < 0.8 {
+			if p.state == StateRiding {
+				p.state = StateWalking
+			} else {
+				p.state = StateRiding
+			}
+		}
+	}
+
+	// 2. Handle Axis/Direction Logic
+	if toggleAxis && p.state == StateRiding {
+		dirOrder := []int{3, 0, 2, 1} // Right -> Down -> Left -> Up
+		for i, d := range dirOrder {
+			if d == p.dir {
+				p.dir = dirOrder[(i+1)%len(dirOrder)]
+				break
+			}
+		}
+	}
+
+	// 3. Auto-flip facing direction
+	if p.state == StateRiding {
+		if p.dir == 2 || p.dir == 3 { // Horizontal mode
+			if inputX < 0 {
+				p.dir = 2
+			}
+			if inputX > 0 {
+				p.dir = 3
+			}
+		} else { // Vertical mode
+			if inputY < 0 {
+				p.dir = 1
+			}
+			if inputY > 0 {
+				p.dir = 0
+			}
+		}
+	} else {
+		// WALKING AUTO-FLIP
+		if inputX < 0 {
+			p.dir = 2
+		}
+		if inputX > 0 {
+			p.dir = 3
+		}
+	}
+
+	// 4. Physics: compute velocity (do NOT move yet)
+	moving := (inputX != 0 || inputY != 0)
+	if p.state == StateRiding {
+		p.velX += inputX * accel
+		p.velY += inputY * accel
+		p.velX *= friction
+		p.velY *= friction
+	} else {
+		if moving {
+			p.velX = inputX * walkSpeed
+			p.velY = inputY * walkSpeed
+		} else {
+			p.velX = 0
+			p.velY = 0
+		}
+	}
+
+	p.updateAnimation(moving)
+}
+
+// separate movement, used by scene for collision handling
+func (p *Player) Move(dx, dy float64) {
+	p.x += dx
+	p.y += dy
 }
 
 func (p *Player) updateAnimation(moving bool) {
