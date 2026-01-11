@@ -118,7 +118,7 @@ REFOCUS
 5. Start cut scene for NYC with twin towers and some clouds parallax...
 
 
-## Sat Jan 10, 2026 
+## Sat Jan 10, 2026 @ 2:00pm
 
 - Added in a 'level' scene title in between the game title and the bike race environment scene. A lot of duplication between scenes, so there should be a title_scene interface in the future. Also switched the key pressed to just key pressed so 'one' click wouldn't skip over the NYC title scene so quickly you can't even see it as a mere human. 
     - NYC title todo: pixel art of NYC with twin towers and some clouds over new york harbor and some parallax movemenet. There needs to be an orange Staten Island Ferry to set the scene. 
@@ -129,3 +129,29 @@ REFOCUS
 - IDEA/TODO => implement a system to abstract what the next scene to load is. Kind of like updading a linked list now.
 
 - Moving 'devlog' content into readme, and then deleting this file.
+
+---
+
+🚕 The taxi update/tilemap Spawn object layer
+
+- Swap out tilemap for the test version, much smaller
+- Set up a manifest scene, although it doesn't have content yet,
+but does have a spin animation!
+- Thinking that as the deadline is tomorrow, may make it a 1 checkpoint
+as finish line sort of race for the time being
+- TAXIS
+- set up a taxi manager and taxi entity
+- spawn points and direction loaded in from Tiled
+- the up car is bringing in one of the incorrect tiles
+TODO
+- Collisions, right now the car and player don't interact
+- Traffic awareness to act more like a traffic automotan
+- Eventually: stop at red lights. move up and down on roadway
+
+---
+
+## Sat Jan 10, 2026 @ 9:18pm
+
+Oh, the WASM doesn't work on an iPad browser! No virtual joystick! 
+Add in a check for macintosh and multitouch to trigger it. 
+Also, when starting the game initially, if you're in the start title scene, and your interaction is TOUCH to trigger the next scene, then toggle on the isMobile flag to make sure that the joystick pops up. At least in theory. 

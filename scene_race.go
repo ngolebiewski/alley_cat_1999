@@ -25,6 +25,7 @@ type RaceScene struct {
 	mapData *tiled.Map
 	mapDraw *tiled.Renderer
 	collide *tiled.CollisionGrid
+	fader   *Fader
 
 	// CPU entities
 	taxiManager *TaxiManager
@@ -51,6 +52,7 @@ func NewRaceScene(game *Game) *RaceScene {
 		player:  NewPlayer(game.assets.BikerImage, 160, 400, 32, 32),
 		mapData: m,
 		mapDraw: renderer,
+		fader:   NewFadeIn(0.75), // <--- Start at 1.0 (fully black)
 	}
 
 	worldW := m.Width * m.TileWidth * scale
@@ -94,6 +96,8 @@ func (s *RaceScene) clampPlayer() {
 
 func (s *RaceScene) Update() error {
 	StartRaceMusic()
+	s.fader.Update()
+
 	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
 		StopRaceMusic()
 		s.game.scene = NewEndScene(s.game)
@@ -144,6 +148,7 @@ func (s *RaceScene) Update() error {
 	if isMobile {
 		s.updateJoystick()
 	}
+
 	return nil
 }
 
@@ -169,6 +174,9 @@ func (s *RaceScene) Draw(screen *ebiten.Image) {
 	if s.paused {
 		ebitenutil.DebugPrintAt(screen, "PAUSED", 140, 110)
 	}
+
+	// 4. DRAW FADER LAST
+	s.fader.Draw(screen)
 }
 
 func (s *RaceScene) movePlayerWithCollisionGrid() {

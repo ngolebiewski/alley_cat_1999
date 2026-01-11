@@ -29,6 +29,7 @@ func (s *TitleScene) Update() error {
 	}
 	s.touchIDs = inpututil.AppendJustPressedTouchIDs(s.touchIDs[:0])
 	if len(s.touchIDs) > 0 {
+		isMobile = true // if you touch to activate the game, you probably want the virtual joystick!
 		s.game.scene = NewTitleSceneNYC(s.game)
 	}
 	return nil
