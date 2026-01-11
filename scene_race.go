@@ -165,7 +165,7 @@ func (s *RaceScene) Update() error {
 
 	// D. Resolve Entity Collisions (Player vs Taxis, Taxi vs Taxi)
 	// This uses the collision_system.go logic we discussed
-	s.collisionSys.Update(s.player, s.taxiManager.taxis)
+	s.collisionSys.Update(s.player, s.taxiManager.taxis, s.collide)
 
 	s.hud.health = float32(s.player.health) / 100.0
 	s.hud.cash = s.player.cash
@@ -212,24 +212,43 @@ func (s *RaceScene) Draw(screen *ebiten.Image) {
 }
 
 func (s *RaceScene) movePlayerWithCollisionGrid() {
+	// Check if player is ALREADY inside a wall before we do anything
+	// This happens if a taxi ejection forced them into a building
+	wasStuck := s.collidesAt(s.player.x, s.player.y)
+
 	// 1. Resolve X Movement
 	oldX := s.player.x
 	s.player.x += s.player.velX
 
-	// Check Walls OR Taxis
-	if s.collidesAt(s.player.x, s.player.y) || s.collisionSys.Update(s.player, s.taxiManager.taxis) {
-		s.player.x = oldX // Snap back to safe position
-		s.player.velX = 0 // Stop momentum
+	if s.collidesAt(s.player.x, s.player.y) {
+		// If we weren't stuck but now we are: BLOCK IT (Normal wall behavior)
+		// If we WERE stuck and we are STILL stuck: BLOCK IT (Prevents moving deeper into wall)
+		if !wasStuck || s.collidesAt(s.player.x, s.player.y) {
+			s.player.x = oldX
+			s.player.velX = 0
+		}
+		// Note: If wasStuck was true, but s.collidesAt is now false,
+		// the code allows the move because it means the player is escaping!
 	}
 
 	// 2. Resolve Y Movement
 	oldY := s.player.y
 	s.player.y += s.player.velY
 
-	// Check Walls OR Taxis
 	if s.collidesAt(s.player.x, s.player.y) {
-		s.player.y = oldY // Snap back to safe position
-		s.player.velY = 0 // Stop momentum
+		// If this move results in a collision...
+		if !wasStuck {
+			// Normal case: Just hit a wall, snap back
+			s.player.y = oldY
+			s.player.velY = 0
+		} else {
+			// Anti-stuck case: If we are already inside a wall,
+			// only snap back if the move doesn't get us out.
+			if s.collidesAt(s.player.x, s.player.y) {
+				s.player.y = oldY
+				s.player.velY = 0
+			}
+		}
 	}
 }
 

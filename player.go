@@ -9,6 +9,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"github.com/ngolebiewski/alley_cat_1999/retrotrack"
+	"github.com/ngolebiewski/alley_cat_1999/tiled"
 )
 
 type BikerState int
@@ -149,7 +150,31 @@ func (p *Player) Bounds() image.Rectangle {
 	)
 }
 
-func (p *Player) OnCollision(other Entity) {
+func (p *Player) wouldCollideAt(newX, newY float64, grid *tiled.CollisionGrid) bool {
+	if grid == nil {
+		return false
+	}
+	const tileSize = 32
+
+	x1 := int(newX) / tileSize
+	y1 := int(newY) / tileSize
+	x2 := int(newX+p.w-1) / tileSize
+	y2 := int(newY+p.h-1) / tileSize
+
+	for y := y1; y <= y2; y++ {
+		for x := x1; x <= x2; x++ {
+			if y < 0 || y >= grid.Height || x < 0 || x >= grid.Width {
+				continue
+			}
+			if grid.Solid[y][x] {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (p *Player) OnCollision(other Entity, grid *tiled.CollisionGrid) { // Added grid parameter
 	if p.state == StateHospital {
 		return
 	}
@@ -160,27 +185,34 @@ func (p *Player) OnCollision(other Entity) {
 			return
 		}
 
-		// Play the crash sound from our retrotrack package
 		retrotrack.PlayCrash()
 
 		// 1. Kickback Physics
 		p.velX = -p.velX * 1.5
 		p.velY = -p.velY * 1.5
 
-		// 2. Position Ejection (respecting zoom scale for ejection distance)
+		// 2. SAFE Position Ejection
 		tx, ty := e.x+(e.width*e.scale)/2, e.y+(e.height*e.scale)/2
 		px, py := p.Center()
 
-		ejectAmt := 4.0 // Base pixels
+		ejectAmt := 12.0 // Slightly larger to ensure they clear the taxi
+
+		dirX := 1.0
 		if px < tx {
-			p.x -= ejectAmt
-		} else {
-			p.x += ejectAmt
+			dirX = -1.0
 		}
+		dirY := 1.0
 		if py < ty {
-			p.y -= ejectAmt
-		} else {
-			p.y += ejectAmt
+			dirY = -1.0
+		}
+
+		// Attempt to eject X
+		if !p.wouldCollideAt(p.x+(dirX*ejectAmt), p.y, grid) {
+			p.x += (dirX * ejectAmt)
+		}
+		// Attempt to eject Y
+		if !p.wouldCollideAt(p.x, p.y+(dirY*ejectAmt), grid) {
+			p.y += (dirY * ejectAmt)
 		}
 
 		// 3. Damage & Invulnerability

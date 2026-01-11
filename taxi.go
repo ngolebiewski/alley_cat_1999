@@ -9,6 +9,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"github.com/ngolebiewski/alley_cat_1999/retrotrack"
+	"github.com/ngolebiewski/alley_cat_1999/tiled"
 )
 
 // Taxi implements Entity
@@ -60,7 +61,7 @@ func (t *Taxi) Bounds() image.Rectangle {
 	)
 }
 
-func (t *Taxi) OnCollision(other Entity) {
+func (t *Taxi) OnCollision(other Entity, grid *tiled.CollisionGrid) {
 	if t.crashed || t.recoveryTimer > 0 {
 		return
 	}

@@ -155,3 +155,26 @@ TODO
 Oh, the WASM doesn't work on an iPad browser! No virtual joystick! 
 Add in a check for macintosh and multitouch to trigger it. 
 Also, when starting the game initially, if you're in the start title scene, and your interaction is TOUCH to trigger the next scene, then toggle on the isMobile flag to make sure that the joystick pops up. At least in theory. 
+
+## Sun Jan 11, 2026 @ 10:36am
+
+*BUGS*
+- When hit by a car can get bumped over a building, and then get stuck there!
+- ~~up/down taxi sprites won't display, something weird with grabbing tile 32!~~
+
+---
+ 🚖 vertical taxi sprite fix, B mobile, cash
+
+ - Set up a Vertical taxi, the function to grab the tiles wasn't working
+ in a vertical context. the bottom of the car was a traffic light! 
+ - Still, will limit vertical taxis until a traffic light scenario
+ is encoded
+
+ -💵 added cash to the player struct and pass to the 
+ heads up display. will gain cash on wins, and lose cash
+ when paying for hospital visits
+
+ -🎮 B button wasn't working on touch screens, attempting a fix and
+ pushing to check
+
+ ---
