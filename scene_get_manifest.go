@@ -9,11 +9,14 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 	"github.com/ngolebiewski/alley_cat_1999/retrotrack"
 	"github.com/ngolebiewski/alley_cat_1999/tiled"
 )
 
 const tileSize = 16
+
+var darkBox = color.RGBA{0, 0, 0, 204}
 
 type GetManifestScene struct {
 	game           *Game
@@ -90,19 +93,6 @@ func (s *GetManifestScene) Draw(screen *ebiten.Image) {
 		"--- MANIFEST RECEIVED ---\nDeliver to all points on the list!\nWatch out for Taxis!",
 	)
 
-	// 2. Draw the list of locations from our actual data
-	if s.animDone {
-		yOff := 40
-		for i, cp := range s.activeManifest.Checkpoints {
-			prefix := "[ ] "
-			if cp.IsFinishLine {
-				prefix = "[FINISH] "
-			}
-			ebitenutil.DebugPrintAt(screen, prefix+cp.Name, 10, yOff+(i*15))
-		}
-		ebitenutil.DebugPrintAt(screen, "PRESS SPACE TO START RACE", 10, screenHeight-20)
-	}
-
 	// 3. Animation Logic for the spinning Manifest Sprite
 	t := s.animTime / 1.0
 	if t > 1 {
@@ -126,6 +116,29 @@ func (s *GetManifestScene) Draw(screen *ebiten.Image) {
 	op.GeoM.Translate(float64(screenWidth)/2, float64(screenHeight)/2)
 
 	screen.DrawImage(s.manifestImg, op)
+
+	// 2. Draw the list of locations from our actual data
+
+	if s.animDone {
+		vector.FillRect(
+			screen,
+			0,
+			0,
+			float32(screenWidth),
+			float32(screenHeight),
+			darkBox,
+			false, // antialias (doesn't matter for axis-aligned rects)
+		)
+		yOff := 60 * zoom
+		for i, cp := range s.activeManifest.Checkpoints {
+			prefix := "[ ] "
+			if cp.IsFinishLine {
+				prefix = "[FINISH] "
+			}
+			ebitenutil.DebugPrintAt(screen, prefix+cp.Name, 40*zoom, yOff+(i*15))
+		}
+		ebitenutil.DebugPrintAt(screen, "PRESS SPACE TO START RACE", 10, screenHeight-20)
+	}
 }
 
 func buildManifestImage(tileset *ebiten.Image, tileSize int) *ebiten.Image {

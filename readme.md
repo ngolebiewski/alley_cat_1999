@@ -179,8 +179,15 @@ Also, when starting the game initially, if you're in the start title scene, and 
 
  ---
 
+Getting the Checkpoints up and running is wild, I feel like the game is really coming together.
+
+
+
+--
  Converted an m4a audio file to ffmpeg -i 2026-01-11_09-56-01.m4a the-reveal.ogg
  guitar by Matt
+
+--
 
  # Special Thanks
  - Matt Golebiewski / Guitar
