@@ -9,8 +9,19 @@ import (
 
 func isMobileBrowser() bool {
 	ua := js.Global().Get("navigator").Get("userAgent").String()
-	return strings.Contains(strings.ToLower(ua), "android") ||
-		strings.Contains(strings.ToLower(ua), "iphone")
+	ua = strings.ToLower(ua)
+
+	// Standard checks for Android and iPhone
+	if strings.Contains(ua, "android") || strings.Contains(ua, "iphone") || strings.Contains(ua, "ipad") {
+		return true
+	}
+
+	// Modern iPad Check:
+	// It reports as "Macintosh" but has multi-touch support.
+	maxTouchPoints := js.Global().Get("navigator").Get("maxTouchPoints").Int()
+	isMac := strings.Contains(ua, "macintosh")
+
+	return isMac && maxTouchPoints > 1
 }
 
 // package main

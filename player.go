@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"math"
 
@@ -36,6 +37,8 @@ func NewPlayer(img *ebiten.Image, startX, startY float64, width, height float64)
 		h:     height,
 	}
 }
+
+// --- Input & Update ---
 
 func (p *Player) Update(inputX, inputY float64, toggleAxis, toggleMount bool) {
 	const accel = 0.2
@@ -83,7 +86,6 @@ func (p *Player) Update(inputX, inputY float64, toggleAxis, toggleMount bool) {
 			}
 		}
 	} else {
-		// WALKING AUTO-FLIP: Flip based on horizontal movement
 		if inputX < 0 {
 			p.dir = 2
 		}
@@ -116,7 +118,6 @@ func (p *Player) UpdateInput(inputX, inputY float64, toggleAxis, toggleMount boo
 	const friction = 0.92
 	const walkSpeed = 1.2
 
-	// 1. Handle Mounting/Dismounting
 	if toggleMount {
 		speed := math.Sqrt(p.velX*p.velX + p.velY*p.velY)
 		if speed < 0.8 {
@@ -128,9 +129,8 @@ func (p *Player) UpdateInput(inputX, inputY float64, toggleAxis, toggleMount boo
 		}
 	}
 
-	// 2. Handle Axis/Direction Logic
 	if toggleAxis && p.state == StateRiding {
-		dirOrder := []int{3, 0, 2, 1} // Right -> Down -> Left -> Up
+		dirOrder := []int{3, 0, 2, 1}
 		for i, d := range dirOrder {
 			if d == p.dir {
 				p.dir = dirOrder[(i+1)%len(dirOrder)]
@@ -139,16 +139,15 @@ func (p *Player) UpdateInput(inputX, inputY float64, toggleAxis, toggleMount boo
 		}
 	}
 
-	// 3. Auto-flip facing direction
 	if p.state == StateRiding {
-		if p.dir == 2 || p.dir == 3 { // Horizontal mode
+		if p.dir == 2 || p.dir == 3 {
 			if inputX < 0 {
 				p.dir = 2
 			}
 			if inputX > 0 {
 				p.dir = 3
 			}
-		} else { // Vertical mode
+		} else {
 			if inputY < 0 {
 				p.dir = 1
 			}
@@ -157,7 +156,6 @@ func (p *Player) UpdateInput(inputX, inputY float64, toggleAxis, toggleMount boo
 			}
 		}
 	} else {
-		// WALKING AUTO-FLIP
 		if inputX < 0 {
 			p.dir = 2
 		}
@@ -166,7 +164,7 @@ func (p *Player) UpdateInput(inputX, inputY float64, toggleAxis, toggleMount boo
 		}
 	}
 
-	// 4. Physics: compute velocity (do NOT move yet)
+	// Physics (compute velocity, do not move yet)
 	moving := (inputX != 0 || inputY != 0)
 	if p.state == StateRiding {
 		p.velX += inputX * accel
@@ -191,6 +189,8 @@ func (p *Player) Move(dx, dy float64) {
 	p.x += dx
 	p.y += dy
 }
+
+// --- Animation ---
 
 func (p *Player) updateAnimation(moving bool) {
 	p.frameTick++
@@ -235,12 +235,12 @@ func (p *Player) updateAnimation(moving bool) {
 	}
 }
 
+// --- Drawing ---
+
 func (p *Player) Draw(screen *ebiten.Image) {
 	const size = 32
 	op := &ebiten.DrawImageOptions{}
 
-	// Draw() uses the current p.dir to decide whether to flip.
-	// Since we update p.dir in walking state above, this works perfectly.
 	if p.dir == 2 {
 		op.GeoM.Scale(-1, 1)
 		op.GeoM.Translate(size, 0)
@@ -261,14 +261,37 @@ func (p *Player) DrawWithCamera(screen *ebiten.Image, cam *Camera) {
 	}
 
 	op.GeoM.Translate(p.x-cam.X, p.y-cam.Y)
-
 	sx := p.frame * size
-	screen.DrawImage(
-		p.img.SubImage(image.Rect(sx, 0, sx+size, size)).(*ebiten.Image),
-		op,
-	)
+	screen.DrawImage(p.img.SubImage(image.Rect(sx, 0, sx+size, size)).(*ebiten.Image), op)
 }
+
+// --- Utility ---
 
 func (p *Player) Center() (float64, float64) {
 	return p.x + float64(p.w/2), p.y + float64(p.h/2)
+}
+
+// --- Entity interface implementation ---
+
+func (p *Player) Bounds() image.Rectangle {
+	return image.Rect(
+		int(p.x),
+		int(p.y),
+		int(p.x+p.w),
+		int(p.y+p.h),
+	)
+}
+
+func (p *Player) OnCollision(other Entity) {
+	switch e := other.(type) {
+	case *Taxi:
+		// Stop player on collision
+		p.velX = 0
+		p.velY = 0
+
+		// TODO: Flash red, reduce health
+		fmt.Println("Player collided with taxi at", e.x, e.y)
+	default:
+		// handle other entity collisions if needed
+	}
 }
