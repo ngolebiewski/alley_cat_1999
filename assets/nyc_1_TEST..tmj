@@ -499,6 +499,72 @@
                  "width":0,
                  "x":71.5,
                  "y":160
+                }, 
+                {
+                 "height":0,
+                 "id":22,
+                 "name":"CHECKPOINT",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"location",
+                         "type":"string",
+                         "value":"White Space Invader"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":263,
+                 "y":327
+                }, 
+                {
+                 "id":27,
+                 "template":"..\/art\/tiled\/CHECKPOINT.tx",
+                 "x":263,
+                 "y":327
+                }, 
+                {
+                 "id":29,
+                 "template":"..\/art\/tiled\/CHECKPOINT.tx",
+                 "x":263,
+                 "y":327
+                }, 
+                {
+                 "height":0,
+                 "id":34,
+                 "name":"CHECKPOINT",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"location",
+                         "type":"string",
+                         "value":"Yagg Grafitti"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":629,
+                 "y":340
+                }, 
+                {
+                 "height":0,
+                 "id":35,
+                 "name":"CHECKPOINT",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"location",
+                         "type":"string",
+                         "value":"Water Tower"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":517,
+                 "y":105
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -507,7 +573,7 @@
          "y":0
         }],
  "nextlayerid":10,
- "nextobjectid":22,
+ "nextobjectid":36,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.2",

@@ -24,14 +24,6 @@ func NewTitleSceneNYC(game *Game) *TitleSceneNYC {
 }
 
 func (s *TitleSceneNYC) Update() error {
-	// Space → start race
-	// if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) {
-	// 	s.game.scene = NewRaceScene(s.game)
-	// }
-	// s.touchIDs = inpututil.AppendJustPressedTouchIDs(s.touchIDs[:0])
-	// if len(s.touchIDs) > 0 {
-	// 	s.game.scene = NewRaceScene(s.game)
-	// }
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) {
 		retrotrack.PlayCityStartSound()
 		s.game.scene = NewGetManifestScene(s.game)

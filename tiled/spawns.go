@@ -68,3 +68,40 @@ func ExtractSpawns(m *Map, layerName string) []Spawn {
 	walkLayers(m.Layers)
 	return spawns
 }
+
+// ExtractManifestCheckpoints scans the "Spawns" layer for CHECKPOINT objects
+func ExtractManifestCheckpoints(m *Map) []Spawn {
+	var spawns []Spawn
+	var walkLayers func(layers []Layer)
+
+	walkLayers = func(layers []Layer) {
+		for _, layer := range layers {
+			if !layer.Visible {
+				continue
+			}
+
+			switch layer.Type {
+			case "group":
+				walkLayers(layer.Layers)
+			case "objectgroup":
+				// We target the layer named "Spawns" from your JSON
+				if layer.Name == "Spawns" {
+					for _, obj := range layer.Objects {
+						// Only pick objects named "CHECKPOINT"
+						if obj.Name == "CHECKPOINT" {
+							spawns = append(spawns, Spawn{
+								X:        obj.X,
+								Y:        obj.Y,
+								Type:     obj.Name,
+								Location: obj.GetStringProperty("location", "Unknown Stop"),
+							})
+						}
+					}
+				}
+			}
+		}
+	}
+
+	walkLayers(m.Layers)
+	return spawns
+}

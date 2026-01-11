@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="57" height="28" tilewidth="16" tileheight="16" infinite="0" nextlayerid="10" nextobjectid="22">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="57" height="28" tilewidth="16" tileheight="16" infinite="0" nextlayerid="10" nextobjectid="36">
  <editorsettings>
-  <export target="tile_maps/nyc_1_TEST..tmj" format="json"/>
+  <export target="../../assets/nyc_1_TEST..tmj" format="json"/>
  </editorsettings>
  <tileset firstgid="1" source="NEW_nyc_spritesheet-Recovered.tsx"/>
  <group id="8" name="Roads and Sidewalks">
@@ -274,6 +274,26 @@
   <object id="21" name="taxi" x="71.5" y="160">
    <properties>
     <property name="direction" value="DOWN"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="22" name="CHECKPOINT" x="263" y="327">
+   <properties>
+    <property name="location" value="White Space Invader"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="27" template="CHECKPOINT.tx" x="263" y="327"/>
+  <object id="29" template="CHECKPOINT.tx" x="263" y="327"/>
+  <object id="34" name="CHECKPOINT" x="629" y="340">
+   <properties>
+    <property name="location" value="Yagg Grafitti"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="35" name="CHECKPOINT" x="517" y="105">
+   <properties>
+    <property name="location" value="Water Tower"/>
    </properties>
    <point/>
   </object>

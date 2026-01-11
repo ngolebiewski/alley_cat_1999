@@ -13,10 +13,11 @@ type GameOverScene struct {
 	game     *Game
 	counter  int
 	touchIDs []ebiten.TouchID
+	manifest *Manifest
 }
 
-func NewGameOverScene(game *Game) *GameOverScene {
-	return &GameOverScene{game: game}
+func NewGameOverScene(game *Game, manifest *Manifest) *GameOverScene {
+	return &GameOverScene{game: game, manifest: manifest}
 }
 
 func (s *GameOverScene) Update() error {
@@ -28,13 +29,15 @@ func (s *GameOverScene) Update() error {
 		if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsKeyJustPressed(ebiten.KeyEnter) || inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) {
 			{
 				retrotrack.PlayCityStartSound()
-				s.game.scene = NewRaceScene(s.game) // Restart
+				retrotrack.Start()
+				s.game.scene = NewRaceScene(s.game, s.manifest) // Restart Level
 			}
 		}
 		s.touchIDs = inpututil.AppendJustPressedTouchIDs(s.touchIDs[:0])
 		if len(s.touchIDs) > 0 {
 			retrotrack.PlayCityStartSound()
-			s.game.scene = NewRaceScene(s.game)
+			retrotrack.Start()
+			s.game.scene = NewRaceScene(s.game, s.manifest)
 		}
 
 	}

@@ -19,8 +19,8 @@
             "scale": 3,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 123.66666666666666,
-                "y": 991.1666666666666
+                "x": 35,
+                "y": 990.8333333333333
             }
         },
         "nyc_1_TEST.tmx": {
@@ -29,15 +29,16 @@
                 8
             ],
             "scale": 2,
-            "selectedLayer": 2,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 181,
-                "y": 340.25
+                "x": 26,
+                "y": 181.75
             }
         }
     },
     "last.exportedFilePath": "/Users/nickgolebiewski/Documents/Coding_Projects/2026/alley_cat_1999/assets",
     "last.imagePath": "/Users/nickgolebiewski/Documents/Coding_Projects/2026/alley_cat_1999/art/aseprite_files",
+    "last.objectTemplatePath": "/Users/nickgolebiewski/Documents/Coding_Projects/2026/alley_cat_1999/art/tiled",
     "map.height": 100,
     "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
     "map.lastUsedFormat": "tmx",

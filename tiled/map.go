@@ -56,6 +56,7 @@ type Spawn struct {
 	X, Y      float64
 	Type      string // "taxi", "player", "checkpoint", etc.
 	Direction string // optional, e.g., for taxis
+	Location  string // for checkpoints
 }
 
 // Helper: get string property from an object

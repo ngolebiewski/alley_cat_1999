@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -26,6 +27,9 @@ type RaceScene struct {
 	mapDraw *tiled.Renderer
 	collide *tiled.CollisionGrid
 
+	// Mission Data
+	manifest *Manifest
+
 	// Fade-in & Fade-out stuff
 	fader     *Fader
 	isExiting bool
@@ -37,7 +41,7 @@ type RaceScene struct {
 	collisionSys *CollisionSystem
 }
 
-func NewRaceScene(game *Game) *RaceScene {
+func NewRaceScene(game *Game, mfest *Manifest) *RaceScene {
 	m, err := tiled.LoadMapFS(embeddedAssets, "assets/nyc_1_TEST..tmj")
 	// m, err := tiled.LoadMapFS(embeddedAssets, "assets/nyc_1..tmj")
 	if err != nil {
@@ -60,6 +64,7 @@ func NewRaceScene(game *Game) *RaceScene {
 		mapDraw:      renderer,
 		fader:        NewFader(0, 0.5), // <--- Start at 1.0 (fully black)
 		collisionSys: &CollisionSystem{game: game},
+		manifest:     mfest,
 	}
 
 	worldW := m.Width * m.TileWidth * scale
@@ -178,11 +183,40 @@ func (s *RaceScene) Update() error {
 		s.updateJoystick()
 	}
 
+	// CHECKPOINTS STUFF
+	// --- CHECKPOINT LOGIC ---
+	if s.manifest != nil {
+		px, py := s.player.Center()
+		for _, cp := range s.manifest.Checkpoints {
+			if cp.IsComplete {
+				continue
+			}
+
+			// 1. Update the client's pacing animation
+			cp.Client.Update()
+
+			// 2. Proximity Check (32 pixels distance)
+			dx := px - cp.X
+			dy := py - cp.Y
+			distSq := dx*dx + dy*dy
+
+			if distSq < 32*32 { // Within 32 pixels
+				cp.IsComplete = true
+				s.player.cash += 100
+				retrotrack.PlayManifestSound() // Reuse the "ding" sound
+				fmt.Printf("DEBUG: Delivered to %s! Cash: %d\n", cp.Name, s.player.cash)
+
+				// If it's the finish line and all others are done, you win!
+				// (Optional: add Win logic here)
+			}
+		}
+	}
+
 	// GAME OVER
 	if s.player.state == StateHospital && !s.isExiting {
 		s.isExiting = true
 		// Small delay or fader before switching
-		s.game.scene = NewGameOverScene(s.game)
+		s.game.scene = NewGameOverScene(s.game, s.manifest)
 		return nil
 	}
 
@@ -195,6 +229,13 @@ func (s *RaceScene) Draw(screen *ebiten.Image) {
 
 	// MAP FIRST
 	s.mapDraw.Draw(screen, s.camera.X, s.camera.Y)
+
+	// 2. CHECKPOINTS / CLIENTS
+	if s.manifest != nil {
+		for _, cp := range s.manifest.Checkpoints {
+			cp.Draw(screen, s.camera) // This uses the Draw method in manifest.go
+		}
+	}
 
 	//ENTITIES
 	// s.player.Draw(screen) // this was the non camera way to draw

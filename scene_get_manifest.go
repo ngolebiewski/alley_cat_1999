@@ -1,80 +1,117 @@
 package main
 
 import (
+	"fmt"
 	"image"
+	"image/color"
 	_ "image/png"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/ngolebiewski/alley_cat_1999/retrotrack"
+	"github.com/ngolebiewski/alley_cat_1999/tiled"
 )
 
 const tileSize = 16
 
 type GetManifestScene struct {
-	game        *Game
-	tileset     *ebiten.Image
-	manifestImg *ebiten.Image
-	touchIDs    []ebiten.TouchID
-	animTime    float64 // seconds elapsed since start of animation
-	animDone    bool    // stop animating after 1 second
+	game           *Game
+	tileset        *ebiten.Image
+	manifestImg    *ebiten.Image
+	touchIDs       []ebiten.TouchID
+	animTime       float64 // seconds elapsed
+	animDone       bool    // stop animating after 1 second
+	activeManifest *Manifest
 }
 
 func NewGetManifestScene(game *Game) *GetManifestScene {
+	fmt.Println("--- DEBUG: STARTING MANIFEST SCENE ---")
 	tileset := game.assets.TilesetImage
 
+	// 1. Load map just to get checkpoint data
+	// We do this here so we can show the names on screen before the race starts
+	m, err := tiled.LoadMapFS(embeddedAssets, "assets/nyc_1_TEST..tmj")
+	if err != nil {
+		fmt.Printf("DEBUG ERROR: Could not load map: %v\n", err)
+		panic(err)
+	}
+
+	// 2. Create the data object that will persist into the race
+	// Scale is 2.0 because our RaceScene scales the map by 2
+	manifestData := NewManifest(m, game.assets.PeopleImage, 2.0)
+	fmt.Printf("DEBUG: Manifest logic complete. %d stops planned.\n", len(manifestData.Checkpoints))
+
 	return &GetManifestScene{
-		game:        game,
-		tileset:     tileset,
-		manifestImg: buildManifestImage(tileset, tileSize),
+		game:           game,
+		tileset:        tileset,
+		manifestImg:    buildManifestImage(tileset, tileSize),
+		activeManifest: manifestData,
 	}
 }
 
 func (s *GetManifestScene) Update() error {
 	// Increment animation time if not done
 	if !s.animDone {
-		s.animTime += 1.0 / 60.0 // 1 tick = 1/60 second
+		s.animTime += 1.0 / 60.0
 		if s.animTime >= 1.0 {
 			s.animTime = 1.0
 			s.animDone = true
 			retrotrack.PlayManifestSound()
+			fmt.Println("DEBUG: Animation finished, sound played.")
 		}
 	}
 
-	// Space / click → start race
-	if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) {
-		retrotrack.Start()
-		s.game.scene = NewRaceScene(s.game)
-	}
+	// Check for input to switch to the actual Race
+	startPressed := inpututil.IsKeyJustPressed(ebiten.KeySpace) ||
+		inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0)
+
 	s.touchIDs = inpututil.AppendJustPressedTouchIDs(s.touchIDs[:0])
 	if len(s.touchIDs) > 0 {
+		startPressed = true
+	}
+
+	if startPressed {
+		fmt.Println("DEBUG: Switching to RaceScene. Passing manifest data...")
 		retrotrack.Start()
-		s.game.scene = NewRaceScene(s.game)
+		// We pass the manifest we generated so the RaceScene doesn't have to reload it
+		s.game.scene = NewRaceScene(s.game, s.activeManifest)
 	}
 
 	return nil
 }
 
 func (s *GetManifestScene) Draw(screen *ebiten.Image) {
+	screen.Fill(color.RGBA{0, 0, 0, 255})
+
+	// 1. Draw Text Instructions
 	ebitenutil.DebugPrint(
 		screen,
-		"Here's your new Manifest.\nThese are all the checkpoints you need to complete\nbefore heading to the finish line!",
+		"--- MANIFEST RECEIVED ---\nDeliver to all points on the list!\nWatch out for Taxis!",
 	)
 
-	finalScale := 5.0
+	// 2. Draw the list of locations from our actual data
+	if s.animDone {
+		yOff := 40
+		for i, cp := range s.activeManifest.Checkpoints {
+			prefix := "[ ] "
+			if cp.IsFinishLine {
+				prefix = "[FINISH] "
+			}
+			ebitenutil.DebugPrintAt(screen, prefix+cp.Name, 10, yOff+(i*15))
+		}
+		ebitenutil.DebugPrintAt(screen, "PRESS SPACE TO START RACE", 10, screenHeight-20)
+	}
 
-	// animation progress 0 → 1
+	// 3. Animation Logic for the spinning Manifest Sprite
 	t := s.animTime / 1.0
 	if t > 1 {
 		t = 1
 	}
+	ease := t * (2 - t) // Ease Out
 
-	// simple ease-out
-	ease := t * (2 - t)
-
-	scale := finalScale * ease
-	rotation := (1 - ease) * 2 * 3.1415926 // 1 full spin
+	scale := 5.0 * ease
+	rotation := (1 - ease) * 2 * 3.1415926
 
 	w := s.manifestImg.Bounds().Dx()
 	h := s.manifestImg.Bounds().Dy()
@@ -82,34 +119,27 @@ func (s *GetManifestScene) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.Filter = ebiten.FilterNearest
 
-	op.GeoM.Translate(-float64(w)/2, -float64(h)/2) // center origin
+	// Center, rotate, scale, and move to middle of screen
+	op.GeoM.Translate(-float64(w)/2, -float64(h)/2)
 	op.GeoM.Rotate(rotation)
 	op.GeoM.Scale(scale, scale)
-	op.GeoM.Translate(float64(screenWidth)/2, float64(screenHeight)/2) // back to center
+	op.GeoM.Translate(float64(screenWidth)/2, float64(screenHeight)/2)
 
 	screen.DrawImage(s.manifestImg, op)
 }
 
-func buildManifestImage(
-	tileset *ebiten.Image,
-	tileSize int,
-) *ebiten.Image {
-
-	// 2x2 tiles → 32x32 image
+func buildManifestImage(tileset *ebiten.Image, tileSize int) *ebiten.Image {
+	fmt.Println("DEBUG: Building composite manifest sprite (Tiles 203, 204, 205, 206)...")
 	img := ebiten.NewImage(tileSize*2, tileSize*2)
-
 	tilesetWidth := tileset.Bounds().Dx()
+	tilesPerRow := tilesetWidth / tileSize
 
-	tileIDs := []int{
-		203, 204,
-		205, 206,
-	}
+	tileIDs := []int{203, 204, 205, 206}
 
 	for i, tileID := range tileIDs {
 		col := i % 2
 		row := i / 2
 
-		tilesPerRow := tilesetWidth / tileSize
 		x := (tileID % tilesPerRow) * tileSize
 		y := (tileID / tilesPerRow) * tileSize
 
@@ -117,11 +147,7 @@ func buildManifestImage(
 		sub := tileset.SubImage(src).(*ebiten.Image)
 
 		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(
-			float64(col*tileSize),
-			float64(row*tileSize),
-		)
-
+		op.GeoM.Translate(float64(col*tileSize), float64(row*tileSize))
 		img.DrawImage(sub, op)
 	}
 
