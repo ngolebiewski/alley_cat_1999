@@ -276,6 +276,7 @@ func (s *RaceScene) Draw(screen *ebiten.Image) {
 	}
 	if s.paused {
 		ebitenutil.DebugPrintAt(screen, "PAUSED", 140, 110)
+		s.drawPauseOverlay(screen)
 	}
 
 	// 4. DRAW FADER LAST

@@ -101,3 +101,31 @@ func (h *HUDOverlay) Reset() {
 	h.startTime = time.Now()
 	h.health = 1.0
 }
+
+func (s *RaceScene) drawPauseOverlay(screen *ebiten.Image) {
+	// 1. Draw a dark semi-transparent overlay
+	vector.FillRect(screen, 0, 0, float32(screenWidth), float32(screenHeight), color.RGBA{0, 0, 0, 180}, false)
+
+	// 2. Draw the list
+	yOff := 50
+	ebitenutil.DebugPrintAt(screen, "--- MISSION MANIFEST (PAUSED) ---", 40, yOff)
+	yOff += 30
+
+	if s.manifest != nil {
+		for i, cp := range s.manifest.Checkpoints {
+			status := "[ ] "
+			if cp.IsComplete {
+				status = "[x] "
+			}
+
+			line := status + cp.Name
+			if cp.IsFinishLine {
+				line = "[FINISH] " + cp.Name
+			}
+
+			ebitenutil.DebugPrintAt(screen, line, 50, yOff+(i*15))
+		}
+	}
+
+	ebitenutil.DebugPrintAt(screen, "\nPRESS ENTER TO RESUME", 40, screenHeight-40)
+}

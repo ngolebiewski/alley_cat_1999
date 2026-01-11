@@ -90,7 +90,7 @@ func (s *GetManifestScene) Draw(screen *ebiten.Image) {
 	// 1. Draw Text Instructions
 	ebitenutil.DebugPrint(
 		screen,
-		"--- MANIFEST RECEIVED ---\nDeliver to all points on the list!\nWatch out for Taxis!",
+		"--- MANIFEST RECEIVED ---\nCheck-in at all points on the list!\nWatch out for Taxis!",
 	)
 
 	// 3. Animation Logic for the spinning Manifest Sprite
