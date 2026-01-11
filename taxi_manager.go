@@ -52,7 +52,9 @@ func NewTaxiManager(tileset *ebiten.Image, scale float64, worldW, worldH float64
 
 	// Extract taxi spawns from the Tiled map
 	tiledSpawns := tiled.ExtractTaxiSpawns(spawnMap)
-	fmt.Println("Taxi spawns:", tiledSpawns)
+	if isDebugMode {
+		fmt.Println("Taxi spawns:", tiledSpawns)
+	}
 
 	// Create taxis at spawn points
 	for _, s := range tiledSpawns {

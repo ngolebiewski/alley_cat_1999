@@ -187,7 +187,10 @@ func (s *RaceScene) Draw(screen *ebiten.Image) {
 	s.taxiManager.Draw(screen, s.camera)
 
 	s.hud.Draw(screen)
-	// s.drawCollisionDebug(screen)
+
+	if isDebugMode {
+		s.drawCollisionDebug(screen)
+	}
 
 	if isMobile {
 		s.drawMobileUI(screen)

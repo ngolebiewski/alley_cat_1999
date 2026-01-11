@@ -16,6 +16,9 @@ func init() {
 	isMobile = isMobileBrowser()
 }
 
+// We'll press 'D' to turn on debug mode. hitboxes, collisions, terminal print statements, etc.
+var isDebugMode = false
+
 // Starting up a State Machine here, to switch between scenes in the game
 // Title -> Race ( + stack for cutscenes, map, rooms, etc. ) -> End Scene
 type Scene interface {
@@ -31,6 +34,9 @@ type Game struct {
 func (g *Game) Update() error {
 	if inpututil.IsKeyJustPressed(ebiten.KeyF) {
 		ebiten.SetFullscreen(!ebiten.IsFullscreen())
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyD) {
+		isDebugMode = !isDebugMode
 	}
 	return g.scene.Update()
 }
