@@ -83,6 +83,7 @@ func NewRaceScene(game *Game, mfest *Manifest) *RaceScene {
 	// scene.taxiManager.worldH = scene.worldH
 	scene.taxiManager = NewTaxiManager(game.assets.TilesetImage, 2.0, scene.worldW, scene.worldH, m) // scale 2x
 	scene.collide = tiled.BuildCollisionGrid(m)
+	scene.hud.maxCheck = len(mfest.Checkpoints) //sets the number of checkpoints on the HUD
 
 	return scene
 }
@@ -207,6 +208,10 @@ func (s *RaceScene) Update() error {
 					cp.IsComplete = true
 					s.player.cash += 100
 					retrotrack.PlayManifestSound()
+
+					// --- UPDATE HUD HERE ---
+					s.hud.checkpoints += 1
+
 					fmt.Printf("DEBUG: Delivered to %s!\n", cp.Name)
 				}
 			}
