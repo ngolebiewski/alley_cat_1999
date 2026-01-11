@@ -62,7 +62,7 @@ func (h *HUDOverlay) Draw(screen *ebiten.Image) {
 	ebitenutil.DebugPrintAt(screen, chkStr, 210*zoom, 5*zoom)
 
 	cashStr := fmt.Sprintf("$ %d", h.cash)
-	ebitenutil.DebugPrintAt(screen, cashStr, 290*zoom, 5*zoom)
+	ebitenutil.DebugPrintAt(screen, cashStr, 270*zoom, 5*zoom)
 
 	// 4. Hospital State Wash
 	if h.health <= 0 {

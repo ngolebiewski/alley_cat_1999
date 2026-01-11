@@ -6,8 +6,6 @@ import (
 	"image/color"
 	"math"
 
-	// Replace with your actual module name
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"github.com/ngolebiewski/alley_cat_1999/retrotrack"
@@ -35,6 +33,7 @@ type Player struct {
 	health      int
 	invulFrames int
 	energy      int
+	cash        int
 }
 
 func NewPlayer(img *ebiten.Image, startX, startY float64, width, height float64) *Player {
@@ -48,6 +47,7 @@ func NewPlayer(img *ebiten.Image, startX, startY float64, width, height float64)
 		h:      height,
 		health: 100,
 		energy: 100,
+		cash:   100,
 	}
 }
 

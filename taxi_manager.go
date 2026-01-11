@@ -59,6 +59,9 @@ func NewTaxiManager(tileset *ebiten.Image, scale float64, worldW, worldH float64
 		scale: scale,
 	}
 
+	if isDebugMode {
+		fmt.Printf("Tileset Width: %d | Tiles Per Row: %d\n", tileset.Bounds().Dx(), tileset.Bounds().Dx()/16)
+	}
 	// SIDE-VIEW (32x16)
 	sideFrames := []*ebiten.Image{
 		subImageRect(tileset, tileRectFromTwoHorizTiles(120, 121, tileSize, tilesetWidth)),
@@ -66,9 +69,15 @@ func NewTaxiManager(tileset *ebiten.Image, scale float64, worldW, worldH float64
 		subImageRect(tileset, tileRectFromTwoHorizTiles(127, 128, tileSize, tilesetWidth)),
 	}
 
+	// TOP-DOWN (16x32) --> the second tile brought up a traffic light!
+	// upFrames := []*ebiten.Image{
+	// 	subImageRect(tileset, tileRectFromTwoVertTiles(22, 32, tileSize, tilesetWidth)),
+	// }
+
 	// TOP-DOWN (16x32)
+	// This uses your 22 and 32 logic but handles the fact they aren't in the same column
 	upFrames := []*ebiten.Image{
-		subImageRect(tileset, tileRectFromTwoVertTiles(22, 32, tileSize, tilesetWidth)),
+		createVerticalTaxi(tileset, 22, 32, tileSize, tilesetWidth),
 	}
 
 	// Spawn Taxis
@@ -165,14 +174,33 @@ func tileRectFromTwoHorizTiles(tile1, tile2, tileSize, tilesetWidth int) image.R
 	return image.Rect(x1, y1, x2+tileSize, y1+tileSize)
 }
 
-func tileRectFromTwoVertTiles(tile1, tile2, tileSize, tilesetWidth int) image.Rectangle {
-	tilesPerRow := tilesetWidth / tileSize
-	x1 := (tile1 % tilesPerRow) * tileSize
-	y1 := (tile1 / tilesPerRow) * tileSize
-	y2 := (tile2 / tilesPerRow) * tileSize
-	return image.Rect(x1, y1, x1+tileSize, y2+tileSize)
-}
-
 func subImageRect(tileset *ebiten.Image, rect image.Rectangle) *ebiten.Image {
 	return tileset.SubImage(rect).(*ebiten.Image)
+}
+
+func createVerticalTaxi(tileset *ebiten.Image, topID, botID, tileSize, tilesetWidth int) *ebiten.Image {
+	tilesPerRow := tilesetWidth / tileSize
+
+	// Calculate Top Tile Source
+	tx := (topID % tilesPerRow) * tileSize
+	ty := (topID / tilesPerRow) * tileSize
+	topImg := tileset.SubImage(image.Rect(tx, ty, tx+tileSize, ty+tileSize)).(*ebiten.Image)
+
+	// Calculate Bottom Tile Source
+	bx := (botID % tilesPerRow) * tileSize
+	by := (botID / tilesPerRow) * tileSize
+	botImg := tileset.SubImage(image.Rect(bx, by, bx+tileSize, by+tileSize)).(*ebiten.Image)
+
+	// Create a new blank 16x32 image
+	result := ebiten.NewImage(tileSize, tileSize*2)
+
+	// Draw Top
+	result.DrawImage(topImg, nil)
+
+	// Draw Bottom (shifted down 16px)
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(0, float64(tileSize))
+	result.DrawImage(botImg, op)
+
+	return result
 }

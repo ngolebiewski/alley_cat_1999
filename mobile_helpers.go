@@ -69,9 +69,9 @@ func (s *RaceScene) isButtonPressed(label string) bool {
 	case "A":
 		r = image.Rect(270*zoom, 170*zoom, 310*zoom, 210*zoom)
 	case "B":
-		r = image.Rect(270*zoom, 170*zoom, 310*zoom, 210*zoom) // Added this range
+		r = image.Rect(220*zoom, 170*zoom, 260*zoom, 210*zoom) // Fixed X coordinates
 	case "START":
-		r = image.Rect(130*zoom, 210*zoom, 190*zoom, int(math.Floor(235.0*zoom)))
+		r = image.Rect(130*zoom, 210*zoom, 190*zoom, 235*zoom)
 	}
 	for _, id := range touches {
 		x, y := ebiten.TouchPosition(id)
@@ -85,9 +85,16 @@ func (s *RaceScene) isButtonPressed(label string) bool {
 func (s *RaceScene) isButtonJustPressed(label string) bool {
 	touches := inpututil.AppendJustPressedTouchIDs(nil)
 	var r image.Rectangle
-	if label == "A" {
+
+	switch label {
+	case "A":
+		// Centered at 290, radius 20
 		r = image.Rect(270*zoom, 170*zoom, 310*zoom, 210*zoom)
+	case "B":
+		// Centered at 240, radius 20
+		r = image.Rect(220*zoom, 170*zoom, 260*zoom, 210*zoom)
 	}
+
 	for _, id := range touches {
 		x, y := ebiten.TouchPosition(id)
 		if image.Pt(x, y).In(r) {

@@ -168,6 +168,7 @@ func (s *RaceScene) Update() error {
 	s.collisionSys.Update(s.player, s.taxiManager.taxis)
 
 	s.hud.health = float32(s.player.health) / 100.0
+	s.hud.cash = s.player.cash
 
 	// 8. Camera & UI
 	px, py := s.player.Center()
