@@ -114,7 +114,7 @@ func (s *RaceScene) Update() error {
 	// If we are fading out and the fader hit 1.0 alpha, swap the scene
 	if s.isExiting && s.fader.Finished {
 		retrotrack.Stop()
-		s.game.scene = NewEndScene(s.game)
+		s.game.scene = NewEndScene(s.game, s.hud.elapsedTimeStr(), s.player.cash)
 		return nil
 	}
 
@@ -187,27 +187,44 @@ func (s *RaceScene) Update() error {
 	// --- CHECKPOINT LOGIC ---
 	if s.manifest != nil {
 		px, py := s.player.Center()
-		for _, cp := range s.manifest.Checkpoints {
-			if cp.IsComplete {
-				continue
-			}
+		allRegularDone := true
 
-			// 1. Update the client's pacing animation
+		// First Pass: Update all NPCs and check regular checkpoints
+		for _, cp := range s.manifest.Checkpoints {
+			// Always update the NPC animation
 			cp.Client.Update()
 
-			// 2. Proximity Check (32 pixels distance)
-			dx := px - cp.X
-			dy := py - cp.Y
-			distSq := dx*dx + dy*dy
+			if cp.IsFinishLine {
+				continue // Skip finish line for now to check if others are done
+			}
 
-			if distSq < 32*32 { // Within 32 pixels
-				cp.IsComplete = true
-				s.player.cash += 100
-				retrotrack.PlayManifestSound() // Reuse the "ding" sound
-				fmt.Printf("DEBUG: Delivered to %s! Cash: %d\n", cp.Name, s.player.cash)
+			if !cp.IsComplete {
+				allRegularDone = false // At least one stop is left!
 
-				// If it's the finish line and all others are done, you win!
-				// (Optional: add Win logic here)
+				// Distance Check
+				dx, dy := px-cp.X, py-cp.Y
+				if (dx*dx + dy*dy) < 32*32 {
+					cp.IsComplete = true
+					s.player.cash += 100
+					retrotrack.PlayManifestSound()
+					fmt.Printf("DEBUG: Delivered to %s!\n", cp.Name)
+				}
+			}
+		}
+
+		// Second Pass: Check Finish Line only if others are done
+		if allRegularDone {
+			for _, cp := range s.manifest.Checkpoints {
+				if cp.IsFinishLine && !cp.IsComplete {
+					dx, dy := px-cp.X, py-cp.Y
+					if (dx*dx + dy*dy) < 32*32 {
+						cp.IsComplete = true
+
+						// Start the Exit Transition to End Scene
+						s.isExiting = true
+						s.fader = NewFader(FadeOut, 0.25)
+					}
+				}
 			}
 		}
 	}

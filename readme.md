@@ -178,3 +178,12 @@ Also, when starting the game initially, if you're in the start title scene, and 
  pushing to check
 
  ---
+
+ Converted an m4a audio file to ffmpeg -i 2026-01-11_09-56-01.m4a the-reveal.ogg
+ guitar by Matt
+
+ # Special Thanks
+ - Matt Golebiewski / Guitar
+ - Carinn Candelaria / Bicycling for source video and stills for animation
+ - Hajime Hoshi's Ebitengine game engine
+ - kettek for organizing the game jam and being the motivation to try making this

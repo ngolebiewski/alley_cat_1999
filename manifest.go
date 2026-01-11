@@ -95,16 +95,24 @@ func (p *Person) Update() {
 }
 
 func (cp *Checkpoint) Draw(screen *ebiten.Image, cam *Camera) {
-	if cp.IsComplete {
-		return
-	}
+	// 1. ALWAYS draw the Person (they don't disappear anymore)
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(cp.Client.X-cam.X, cp.Client.Y-cam.Y)
 	screen.DrawImage(cp.Client.Img, op)
 
-	// Floating indicator
-	bob := math.Sin(cp.Client.BobTimer) * 4
-	ebitenutil.DebugPrintAt(screen, "?", int(cp.Client.X-cam.X)+12, int(cp.Client.Y-cam.Y)-15+int(bob))
+	// 2. ONLY draw indicators if not complete
+	if !cp.IsComplete {
+		bob := math.Sin(cp.Client.BobTimer) * 4
+		indicator := "?"
+		if cp.IsFinishLine {
+			indicator = "FINISH" // Visual hint for the last stop
+		}
+
+		ebitenutil.DebugPrintAt(screen, indicator,
+			int(cp.Client.X-cam.X)+8,
+			int(cp.Client.Y-cam.Y)-20+int(bob),
+		)
+	}
 }
 
 func makePeople(spritesheet *ebiten.Image) []*ebiten.Image {

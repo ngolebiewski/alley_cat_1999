@@ -1,16 +1,23 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 type EndScene struct {
 	game *Game
+	time string
+	cash int
 }
 
-func NewEndScene(game *Game) *EndScene {
-	return &EndScene{game: game}
+func NewEndScene(game *Game, time string, cash int) *EndScene {
+	return &EndScene{game: game,
+		time: time,
+		cash: cash,
+	}
 }
 
 func (s *EndScene) Update() error {
@@ -21,5 +28,20 @@ func (s *EndScene) Update() error {
 }
 
 func (s *EndScene) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, "RACE OVER\n\nBest Times\nCC 01:10:18\nAL 01:10:19\nNG 01:30:45\nHH 1:34:12\nDFL: DT\n\n**Press Enter**\n\nGame: https://github.com/ngolebiewski/alley_cat_1999")
+	results := fmt.Sprintf(
+		"RACE OVER\n\n"+
+			"YOUR TIME: %s\n"+
+			"CASH EARNED: $%d\n\n"+
+			"--- Leaderboard ---\n"+
+			"CC 01:10:18\n"+
+			"AL 01:10:19\n"+
+			"NG 01:30:45\n"+
+			"HH 01:34:12\n"+
+			"DFL: DT\n\n"+
+			"Press [ENTER] to Restart\n\n"+
+			"Game: https://github.com/ngolebiewski/alley_cat_1999",
+		s.time, s.cash,
+	)
+
+	ebitenutil.DebugPrint(screen, results)
 }
