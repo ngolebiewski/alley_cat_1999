@@ -178,6 +178,14 @@ func (s *RaceScene) Update() error {
 		s.updateJoystick()
 	}
 
+	// GAME OVER
+	if s.player.state == StateHospital && !s.isExiting {
+		s.isExiting = true
+		// Small delay or fader before switching
+		s.game.scene = NewGameOverScene(s.game)
+		return nil
+	}
+
 	return nil
 }
 
