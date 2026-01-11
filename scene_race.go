@@ -25,7 +25,10 @@ type RaceScene struct {
 	mapData *tiled.Map
 	mapDraw *tiled.Renderer
 	collide *tiled.CollisionGrid
-	fader   *Fader
+
+	// Fade-in & Fade-out stuff
+	fader     *Fader
+	isExiting bool
 
 	// CPU entities
 	taxiManager *TaxiManager
@@ -52,7 +55,7 @@ func NewRaceScene(game *Game) *RaceScene {
 		player:  NewPlayer(game.assets.BikerImage, 160, 400, 32, 32),
 		mapData: m,
 		mapDraw: renderer,
-		fader:   NewFadeIn(0.75), // <--- Start at 1.0 (fully black)
+		fader:   NewFader(0, 0.5), // <--- Start at 1.0 (fully black)
 	}
 
 	worldW := m.Width * m.TileWidth * scale
@@ -97,6 +100,24 @@ func (s *RaceScene) clampPlayer() {
 func (s *RaceScene) Update() error {
 	StartRaceMusic()
 	s.fader.Update()
+
+	// 1. Check if fade-out finished -> SWAP SCENE
+	if s.isExiting && s.fader.Finished {
+		StopRaceMusic()
+		s.game.scene = NewEndScene(s.game)
+		return nil
+	}
+
+	// 2. Handle ESC (Start fade out)
+	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) && !s.isExiting {
+		s.isExiting = true
+		s.fader = NewFader(FadeOut, 0.5)
+	}
+
+	// 3. Block input/logic if exiting
+	if s.isExiting || s.paused {
+		return nil
+	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
 		StopRaceMusic()
