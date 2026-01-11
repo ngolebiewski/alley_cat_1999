@@ -5,12 +5,15 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/ngolebiewski/alley_cat_1999/retrotrack"
 )
 
 type EndScene struct {
-	game *Game
-	time string
-	cash int
+	game     *Game
+	time     string
+	cash     int
+	touchIDs []ebiten.TouchID
 }
 
 func NewEndScene(game *Game, time string, cash int) *EndScene {
@@ -21,8 +24,18 @@ func NewEndScene(game *Game, time string, cash int) *EndScene {
 }
 
 func (s *EndScene) Update() error {
-	if ebiten.IsKeyPressed(ebiten.KeyEnter) {
-		s.game.scene = NewTitleScene(s.game)
+	if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsKeyJustPressed(ebiten.KeyEnter) || inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) {
+		{
+			retrotrack.PlayCityStartSound()
+			retrotrack.Start()
+			s.game.scene = NewTitleScene(s.game)
+		}
+		s.touchIDs = inpututil.AppendJustPressedTouchIDs(s.touchIDs[:0])
+		if len(s.touchIDs) > 0 {
+			retrotrack.PlayCityStartSound()
+			retrotrack.Start()
+			s.game.scene = NewTitleScene(s.game)
+		}
 	}
 	return nil
 }
