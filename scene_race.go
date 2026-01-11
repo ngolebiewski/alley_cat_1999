@@ -2,12 +2,12 @@ package main
 
 import (
 	"image/color"
-	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 
+	"github.com/ngolebiewski/alley_cat_1999/retrotrack"
 	"github.com/ngolebiewski/alley_cat_1999/tiled"
 )
 
@@ -32,6 +32,9 @@ type RaceScene struct {
 
 	// CPU entities
 	taxiManager *TaxiManager
+
+	//Colllision System
+	collisionSys *CollisionSystem
 }
 
 func NewRaceScene(game *Game) *RaceScene {
@@ -50,12 +53,13 @@ func NewRaceScene(game *Game) *RaceScene {
 	)
 
 	scene := &RaceScene{
-		game:    game,
-		hud:     NewHUDOverlay(),
-		player:  NewPlayer(game.assets.BikerImage, 160, 400, 32, 32),
-		mapData: m,
-		mapDraw: renderer,
-		fader:   NewFader(0, 0.5), // <--- Start at 1.0 (fully black)
+		game:         game,
+		hud:          NewHUDOverlay(),
+		player:       NewPlayer(game.assets.BikerImage, 160, 400, 32, 32),
+		mapData:      m,
+		mapDraw:      renderer,
+		fader:        NewFader(0, 0.5), // <--- Start at 1.0 (fully black)
+		collisionSys: &CollisionSystem{game: game},
 	}
 
 	worldW := m.Width * m.TileWidth * scale
@@ -98,71 +102,72 @@ func (s *RaceScene) clampPlayer() {
 }
 
 func (s *RaceScene) Update() error {
-	StartRaceMusic()
+	// 1. Update the Fader first (handles alpha timing)
 	s.fader.Update()
 
-	// 1. Check if fade-out finished -> SWAP SCENE
+	// 2. Scene Transition Logic
+	// If we are fading out and the fader hit 1.0 alpha, swap the scene
 	if s.isExiting && s.fader.Finished {
-		StopRaceMusic()
+		retrotrack.Stop()
 		s.game.scene = NewEndScene(s.game)
 		return nil
 	}
 
-	// 2. Handle ESC (Start fade out)
+	// 3. Handle Exit Trigger
+	// Start the fade out process when ESC is pressed
 	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) && !s.isExiting {
 		s.isExiting = true
-		s.fader = NewFader(FadeOut, 0.5)
+		s.fader = NewFader(FadeOut, 0.25) // 0.5 seconds to black
 	}
 
-	// 3. Block input/logic if exiting
-	if s.isExiting || s.paused {
-		return nil
-	}
-
-	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
-		StopRaceMusic()
-		s.game.scene = NewEndScene(s.game)
-		return nil
-	}
+	// 4. Pause Logic
 	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) || s.isButtonPressed("START") {
 		s.paused = !s.paused
 	}
-	if s.paused {
+
+	// 5. Early Return
+	// Stop world updates if the game is paused or we are currently fading out
+	if s.paused || s.isExiting {
 		return nil
 	}
 
-	// 1. Gather Inputs
+	// 6. Gather Input
 	var inX, inY float64
 	jx, jy := s.getJoystickVector()
+
+	// Keyboard or Virtual Joystick
 	if ebiten.IsKeyPressed(ebiten.KeyLeft) || jx < -0.2 {
 		inX = -1
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyRight) || jx > 0.2 {
+	} else if ebiten.IsKeyPressed(ebiten.KeyRight) || jx > 0.2 {
 		inX = 1
 	}
+
 	if ebiten.IsKeyPressed(ebiten.KeyUp) || jy < -0.2 {
 		inY = -1
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyDown) || jy > 0.2 {
+	} else if ebiten.IsKeyPressed(ebiten.KeyDown) || jy > 0.2 {
 		inY = 1
 	}
 
 	toggleAxis := inpututil.IsKeyJustPressed(ebiten.KeySpace) || s.isButtonJustPressed("A")
 	toggleMount := inpututil.IsKeyJustPressed(ebiten.KeyB) || s.isButtonJustPressed("B")
 
-	// 2. Update Player
-	// s.player.Update(inX, inY, toggleAxis, toggleMount) // without collission checking
+	// 7. Physics & Movement (The Order Matters!)
 
-	// 1. Update velocity & animation
+	// A. Calculate Player Velocity/Animation based on input
 	s.player.UpdateInput(inX, inY, toggleAxis, toggleMount)
 
-	// 2. Move with collision grid
+	// B. Move player and resolve Tiled map collisions (walls)
 	s.movePlayerWithCollisionGrid()
 	s.clampPlayer()
 
-	s.taxiManager.Update(s.player)
+	// C. Update Taxis (Movement & internal timers)
+	s.taxiManager.Update(s.player.x, s.player.y)
 
-	// 3. Update Camera
+	// D. Resolve Entity Collisions (Player vs Taxis, Taxi vs Taxi)
+	// This uses the collision_system.go logic we discussed
+	s.collisionSys.Update(s.player, s.taxiManager.taxis)
+
+	// 8. Camera & UI
 	px, py := s.player.Center()
 	s.camera.Follow(px, py)
 
@@ -204,28 +209,24 @@ func (s *RaceScene) Draw(screen *ebiten.Image) {
 }
 
 func (s *RaceScene) movePlayerWithCollisionGrid() {
-	const tileSize = 32
+	// 1. Resolve X Movement
+	oldX := s.player.x
+	s.player.x += s.player.velX
 
-	// 1. Compute attempted new positions
-	newX := s.player.x + s.player.velX
-	newY := s.player.y + s.player.velY
-
-	// 2. Clamp X/Y to map bounds
-	newX = math.Max(0, math.Min(newX, float64(s.worldW)-s.player.w))
-	newY = math.Max(0, math.Min(newY, float64(s.worldH*tileSize)-s.player.h))
-
-	// 3. Check X movement
-	if !s.collidesAt(newX, s.player.y) {
-		s.player.x = newX
-	} else {
-		s.player.velX = 0
+	// Check Walls OR Taxis
+	if s.collidesAt(s.player.x, s.player.y) || s.collisionSys.Update(s.player, s.taxiManager.taxis) {
+		s.player.x = oldX // Snap back to safe position
+		s.player.velX = 0 // Stop momentum
 	}
 
-	// 4. Check Y movement
-	if !s.collidesAt(s.player.x, newY) {
-		s.player.y = newY
-	} else {
-		s.player.velY = 0
+	// 2. Resolve Y Movement
+	oldY := s.player.y
+	s.player.y += s.player.velY
+
+	// Check Walls OR Taxis
+	if s.collidesAt(s.player.x, s.player.y) {
+		s.player.y = oldY // Snap back to safe position
+		s.player.velY = 0 // Stop momentum
 	}
 }
 

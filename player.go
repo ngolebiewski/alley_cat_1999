@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"image"
+	"image/color"
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 type BikerState int
@@ -24,26 +26,38 @@ type Player struct {
 	frame      int
 	frameTick  int
 	img        *ebiten.Image
+
+	// Gameplay stats
+	health      int
+	invulFrames int
+	energy      int
 }
 
 func NewPlayer(img *ebiten.Image, startX, startY float64, width, height float64) *Player {
 	return &Player{
-		img:   img,
-		x:     startX,
-		y:     startY,
-		state: StateRiding,
-		dir:   3, // Facing Right
-		w:     width,
-		h:     height,
+		img:    img,
+		x:      startX,
+		y:      startY,
+		state:  StateRiding,
+		dir:    3, // Facing Right
+		w:      width,
+		h:      height,
+		health: 100,
+		energy: 100,
 	}
 }
 
-// --- Input & Update ---
-
-func (p *Player) Update(inputX, inputY float64, toggleAxis, toggleMount bool) {
+// UpdateInput calculates desired velocity and handles state.
+// The actual X/Y movement is handled by the RaceScene's collision grid.
+func (p *Player) UpdateInput(inputX, inputY float64, toggleAxis, toggleMount bool) {
 	const accel = 0.2
 	const friction = 0.92
 	const walkSpeed = 1.2
+
+	// Handle invulnerability timer
+	if p.invulFrames > 0 {
+		p.invulFrames--
+	}
 
 	// 1. Handle Mounting/Dismounting
 	if toggleMount {
@@ -59,77 +73,6 @@ func (p *Player) Update(inputX, inputY float64, toggleAxis, toggleMount bool) {
 
 	// 2. Handle Axis/Direction Logic
 	if toggleAxis && p.state == StateRiding {
-		dirOrder := []int{3, 0, 2, 1} // Right -> Down -> Left -> Up
-		for i, d := range dirOrder {
-			if d == p.dir {
-				p.dir = dirOrder[(i+1)%len(dirOrder)]
-				break
-			}
-		}
-	}
-
-	// 3. Auto-flip facing direction
-	if p.state == StateRiding {
-		if p.dir == 2 || p.dir == 3 { // Horizontal mode
-			if inputX < 0 {
-				p.dir = 2
-			}
-			if inputX > 0 {
-				p.dir = 3
-			}
-		} else { // Vertical mode
-			if inputY < 0 {
-				p.dir = 1
-			}
-			if inputY > 0 {
-				p.dir = 0
-			}
-		}
-	} else {
-		if inputX < 0 {
-			p.dir = 2
-		}
-		if inputX > 0 {
-			p.dir = 3
-		}
-	}
-
-	// 4. Physics
-	moving := (inputX != 0 || inputY != 0)
-	if p.state == StateRiding {
-		p.velX += inputX * accel
-		p.velY += inputY * accel
-		p.velX *= friction
-		p.velY *= friction
-		p.x += p.velX
-		p.y += p.velY
-	} else {
-		if moving {
-			p.x += inputX * walkSpeed
-			p.y += inputY * walkSpeed
-		}
-	}
-
-	p.updateAnimation(moving)
-}
-
-func (p *Player) UpdateInput(inputX, inputY float64, toggleAxis, toggleMount bool) {
-	const accel = 0.2
-	const friction = 0.92
-	const walkSpeed = 1.2
-
-	if toggleMount {
-		speed := math.Sqrt(p.velX*p.velX + p.velY*p.velY)
-		if speed < 0.8 {
-			if p.state == StateRiding {
-				p.state = StateWalking
-			} else {
-				p.state = StateRiding
-			}
-		}
-	}
-
-	if toggleAxis && p.state == StateRiding {
 		dirOrder := []int{3, 0, 2, 1}
 		for i, d := range dirOrder {
 			if d == p.dir {
@@ -139,6 +82,7 @@ func (p *Player) UpdateInput(inputX, inputY float64, toggleAxis, toggleMount boo
 		}
 	}
 
+	// 3. Set Direction
 	if p.state == StateRiding {
 		if p.dir == 2 || p.dir == 3 {
 			if inputX < 0 {
@@ -164,7 +108,7 @@ func (p *Player) UpdateInput(inputX, inputY float64, toggleAxis, toggleMount boo
 		}
 	}
 
-	// Physics (compute velocity, do not move yet)
+	// 4. Calculate Velocity (Do not add to X/Y here; RaceScene does that)
 	moving := (inputX != 0 || inputY != 0)
 	if p.state == StateRiding {
 		p.velX += inputX * accel
@@ -184,13 +128,56 @@ func (p *Player) UpdateInput(inputX, inputY float64, toggleAxis, toggleMount boo
 	p.updateAnimation(moving)
 }
 
-// separate movement, used by scene for collision handling
-func (p *Player) Move(dx, dy float64) {
-	p.x += dx
-	p.y += dy
+// --- Entity Interface & Collision ---
+
+func (p *Player) Bounds() image.Rectangle {
+	return image.Rect(
+		int(p.x),
+		int(p.y),
+		int(p.x+p.w),
+		int(p.y+p.h),
+	)
 }
 
-// --- Animation ---
+func (p *Player) OnCollision(other Entity) {
+	switch e := other.(type) {
+	case *Taxi:
+		if p.invulFrames > 0 {
+			return
+		}
+
+		// 1. Kickback Physics: Reverse and boost velocity
+		p.velX = -p.velX * 1.5
+		p.velY = -p.velY * 1.5
+
+		// 2. POSITION EJECTION (The Fix for Phasing)
+		// We move the player slightly away from the taxi center immediately
+		// so they aren't overlapping in the next frame's move check.
+		tx, ty := e.x+(e.width*e.scale)/2, e.y+(e.height*e.scale)/2
+		px, py := p.Center()
+
+		if px < tx {
+			p.x -= 4
+		} else {
+			p.x += 4
+		}
+		if py < ty {
+			p.y -= 4
+		} else {
+			p.y += 4
+		}
+
+		// 3. Damage & Invulnerability
+		p.health -= 15
+		p.invulFrames = 45
+
+		if isDebugMode {
+			fmt.Printf("HIT! Health: %d | Pos Ejected\n", p.health)
+		}
+	}
+}
+
+// --- Animation & Drawing ---
 
 func (p *Player) updateAnimation(moving bool) {
 	p.frameTick++
@@ -235,23 +222,12 @@ func (p *Player) updateAnimation(moving bool) {
 	}
 }
 
-// --- Drawing ---
-
-func (p *Player) Draw(screen *ebiten.Image) {
-	const size = 32
-	op := &ebiten.DrawImageOptions{}
-
-	if p.dir == 2 {
-		op.GeoM.Scale(-1, 1)
-		op.GeoM.Translate(size, 0)
+func (p *Player) DrawWithCamera(screen *ebiten.Image, cam *Camera) {
+	// Simple flash effect when invulnerable
+	if p.invulFrames > 0 && (p.frameTick/4)%2 == 0 {
+		return
 	}
 
-	op.GeoM.Translate(p.x, p.y)
-	sx := p.frame * size
-	screen.DrawImage(p.img.SubImage(image.Rect(sx, 0, sx+size, size)).(*ebiten.Image), op)
-}
-
-func (p *Player) DrawWithCamera(screen *ebiten.Image, cam *Camera) {
 	const size = 32
 	op := &ebiten.DrawImageOptions{}
 
@@ -263,35 +239,29 @@ func (p *Player) DrawWithCamera(screen *ebiten.Image, cam *Camera) {
 	op.GeoM.Translate(p.x-cam.X, p.y-cam.Y)
 	sx := p.frame * size
 	screen.DrawImage(p.img.SubImage(image.Rect(sx, 0, sx+size, size)).(*ebiten.Image), op)
+
+	// --- DEBUG HITBOX ---
+	if isDebugMode {
+		// Cyan outline for player
+		vector.StrokeRect(screen,
+			float32(p.x-cam.X),
+			float32(p.y-cam.Y),
+			float32(p.w),
+			float32(p.h),
+			1, // Stroke width
+			color.RGBA{0, 255, 255, 255},
+			false, // don't use anti-alias for hitboxes (sharper)
+		)
+	}
 }
 
-// --- Utility ---
+// --- Helpers ---
 
 func (p *Player) Center() (float64, float64) {
-	return p.x + float64(p.w/2), p.y + float64(p.h/2)
+	return p.x + p.w/2, p.y + p.h/2
 }
 
-// --- Entity interface implementation ---
-
-func (p *Player) Bounds() image.Rectangle {
-	return image.Rect(
-		int(p.x),
-		int(p.y),
-		int(p.x+p.w),
-		int(p.y+p.h),
-	)
-}
-
-func (p *Player) OnCollision(other Entity) {
-	switch e := other.(type) {
-	case *Taxi:
-		// Stop player on collision
-		p.velX = 0
-		p.velY = 0
-
-		// TODO: Flash red, reduce health
-		fmt.Println("Player collided with taxi at", e.x, e.y)
-	default:
-		// handle other entity collisions if needed
-	}
+func (p *Player) Move(dx, dy float64) {
+	p.x += dx
+	p.y += dy
 }

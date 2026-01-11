@@ -7,6 +7,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/ngolebiewski/alley_cat_1999/retrotrack"
 )
 
 const tileSize = 16
@@ -42,10 +43,12 @@ func (s *GetManifestScene) Update() error {
 
 	// Space / click → start race
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) {
+		retrotrack.Start()
 		s.game.scene = NewRaceScene(s.game)
 	}
 	s.touchIDs = inpututil.AppendJustPressedTouchIDs(s.touchIDs[:0])
 	if len(s.touchIDs) > 0 {
+		retrotrack.Start()
 		s.game.scene = NewRaceScene(s.game)
 	}
 

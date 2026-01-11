@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	_ "image/png"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/ngolebiewski/alley_cat_1999/retrotrack"
 )
 
 // This just checks to see if the virtual joystick gets appended to the UI on touch screens/mobile for WASM in browser
@@ -37,6 +39,7 @@ func (g *Game) Update() error {
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyD) {
 		isDebugMode = !isDebugMode
+		fmt.Println("Debug Mode: ", isDebugMode)
 	}
 	return g.scene.Update()
 }
@@ -61,6 +64,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 func main() {
 	ebiten.SetWindowSize(640, 480)
 	ebiten.SetWindowTitle("Alley Cat 1999")
+	retrotrack.Initialize()
 
 	game := NewGame()
 	if err := ebiten.RunGame(game); err != nil {

@@ -6,6 +6,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/ngolebiewski/alley_cat_1999/retrotrack"
 )
 
 type TitleScene struct {
@@ -25,11 +26,13 @@ func NewTitleScene(game *Game) *TitleScene {
 func (s *TitleScene) Update() error {
 	// Space → Stage Title
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) {
+		retrotrack.PlayStartSound()
 		s.game.scene = NewTitleSceneNYC(s.game)
 	}
 	s.touchIDs = inpututil.AppendJustPressedTouchIDs(s.touchIDs[:0])
 	if len(s.touchIDs) > 0 {
 		isMobile = true // if you touch to activate the game, you probably want the virtual joystick!
+		retrotrack.PlayStartSound()
 		s.game.scene = NewTitleSceneNYC(s.game)
 	}
 	return nil
