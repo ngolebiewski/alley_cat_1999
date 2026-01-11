@@ -166,21 +166,6 @@ func addLead(buf []float64, off, m, spb int) {
 	}
 }
 
-func addEbRiff(buf []float64, off, m, spb int) {
-	root := 77.78
-	for b := 0; b < 8; b++ {
-		start := off + b*spb
-		f := root * 4
-		if b%2 == 1 {
-			f *= 1.414
-		}
-		for i := 0; i < spb && start+i < len(buf); i++ {
-			v := 0.04 * math.Sin(2*math.Pi*10.0*float64(i)/sampleRate)
-			buf[start+i] += waveform(f, "square", i, 0.15, v)
-		}
-	}
-}
-
 // --- AUDIO UTILITIES ---
 
 func waveform(freq float64, kind string, i int, vol float64, vibrato float64) float64 {
@@ -219,10 +204,18 @@ func generateSimpleSFX(freqs []float64, duration float64, kind string, vol float
 	samples := int(sampleRate * duration)
 	buf := make([]float64, samples)
 	for i := 0; i < samples; i++ {
+		// t := float64(i) / sampleRate
 		for _, f := range freqs {
 			buf[i] += waveform(f, kind, i, vol, 0)
 		}
-		buf[i] *= math.Exp(-float64(i) / 3000)
+
+		// --- THE FIX ---
+		// Changed 3000 to 15000 for a much slower volume drop
+		// Or use a linear fade out:
+		// fade := 1.0 - (float64(i) / float64(samples))
+
+		decay := math.Exp(-float64(i) / 15000)
+		buf[i] *= decay
 	}
 	return floatToPCM(buf)
 }

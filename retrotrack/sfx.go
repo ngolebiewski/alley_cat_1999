@@ -11,9 +11,13 @@ func PlayHonk() {
 	if context == nil {
 		return
 	}
-	freqs := []float64{220.0, 247.0}
-	duration := 0.2
-	pcm := generateSimpleSFX(freqs, duration, "square", 0.15)
+	// NYC Taxi dissonance: Bb, B, and E
+	freqs := []float64{220.0, 247.0, 329.63}
+	duration := 0.6
+
+	// Now we call the helper function
+	pcm := generateSimpleSFX(freqs, duration, "square", 0.1)
+
 	p := context.NewPlayerFromBytes(pcm)
 	p.Play()
 }
