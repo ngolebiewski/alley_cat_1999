@@ -27,15 +27,14 @@ func (s *EndScene) Update() error {
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsKeyJustPressed(ebiten.KeyEnter) || inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) {
 		{
 			retrotrack.PlayCityStartSound()
-			retrotrack.Start()
 			s.game.scene = NewTitleScene(s.game)
 		}
-		s.touchIDs = inpututil.AppendJustPressedTouchIDs(s.touchIDs[:0])
-		if len(s.touchIDs) > 0 {
-			retrotrack.PlayCityStartSound()
-			retrotrack.Start()
-			s.game.scene = NewTitleScene(s.game)
-		}
+
+	}
+	s.touchIDs = inpututil.AppendJustPressedTouchIDs(s.touchIDs[:0])
+	if len(s.touchIDs) > 0 {
+		retrotrack.PlayCityStartSound()
+		s.game.scene = NewTitleScene(s.game)
 	}
 	return nil
 }
