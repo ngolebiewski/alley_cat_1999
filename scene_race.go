@@ -167,6 +167,8 @@ func (s *RaceScene) Update() error {
 	// This uses the collision_system.go logic we discussed
 	s.collisionSys.Update(s.player, s.taxiManager.taxis)
 
+	s.hud.health = float32(s.player.health) / 100.0
+
 	// 8. Camera & UI
 	px, py := s.player.Center()
 	s.camera.Follow(px, py)
