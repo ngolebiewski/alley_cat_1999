@@ -6,6 +6,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/ngolebiewski/alley_cat_1999/retrotrack"
 )
 
 type TitleSceneNYC struct {
@@ -32,10 +33,12 @@ func (s *TitleSceneNYC) Update() error {
 	// 	s.game.scene = NewRaceScene(s.game)
 	// }
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) {
+		retrotrack.PlayCityStartSound()
 		s.game.scene = NewGetManifestScene(s.game)
 	}
 	s.touchIDs = inpututil.AppendJustPressedTouchIDs(s.touchIDs[:0])
 	if len(s.touchIDs) > 0 {
+		retrotrack.PlayCityStartSound()
 		s.game.scene = NewGetManifestScene(s.game)
 	}
 	return nil

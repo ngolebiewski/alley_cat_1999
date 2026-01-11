@@ -6,8 +6,11 @@ import (
 	"image/color"
 	"math"
 
+	// Replace with your actual module name
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
+	"github.com/ngolebiewski/alley_cat_1999/retrotrack"
 )
 
 type BikerState int
@@ -15,6 +18,7 @@ type BikerState int
 const (
 	StateRiding BikerState = iota
 	StateWalking
+	StateHospital
 )
 
 type Player struct {
@@ -48,8 +52,14 @@ func NewPlayer(img *ebiten.Image, startX, startY float64, width, height float64)
 }
 
 // UpdateInput calculates desired velocity and handles state.
-// The actual X/Y movement is handled by the RaceScene's collision grid.
 func (p *Player) UpdateInput(inputX, inputY float64, toggleAxis, toggleMount bool) {
+	// If in Hospital, freeze input and movement
+	if p.state == StateHospital {
+		p.velX = 0
+		p.velY = 0
+		return
+	}
+
 	const accel = 0.2
 	const friction = 0.92
 	const walkSpeed = 1.2
@@ -108,7 +118,7 @@ func (p *Player) UpdateInput(inputX, inputY float64, toggleAxis, toggleMount boo
 		}
 	}
 
-	// 4. Calculate Velocity (Do not add to X/Y here; RaceScene does that)
+	// 4. Calculate Velocity
 	moving := (inputX != 0 || inputY != 0)
 	if p.state == StateRiding {
 		p.velX += inputX * accel
@@ -140,39 +150,51 @@ func (p *Player) Bounds() image.Rectangle {
 }
 
 func (p *Player) OnCollision(other Entity) {
+	if p.state == StateHospital {
+		return
+	}
+
 	switch e := other.(type) {
 	case *Taxi:
 		if p.invulFrames > 0 {
 			return
 		}
 
-		// 1. Kickback Physics: Reverse and boost velocity
+		// Play the crash sound from our retrotrack package
+		retrotrack.PlayCrash()
+
+		// 1. Kickback Physics
 		p.velX = -p.velX * 1.5
 		p.velY = -p.velY * 1.5
 
-		// 2. POSITION EJECTION (The Fix for Phasing)
-		// We move the player slightly away from the taxi center immediately
-		// so they aren't overlapping in the next frame's move check.
+		// 2. Position Ejection (respecting zoom scale for ejection distance)
 		tx, ty := e.x+(e.width*e.scale)/2, e.y+(e.height*e.scale)/2
 		px, py := p.Center()
 
+		ejectAmt := 4.0 // Base pixels
 		if px < tx {
-			p.x -= 4
+			p.x -= ejectAmt
 		} else {
-			p.x += 4
+			p.x += ejectAmt
 		}
 		if py < ty {
-			p.y -= 4
+			p.y -= ejectAmt
 		} else {
-			p.y += 4
+			p.y += ejectAmt
 		}
 
 		// 3. Damage & Invulnerability
-		p.health -= 15
-		p.invulFrames = 45
+		p.health -= 25
+		if p.health <= 0 {
+			p.health = 0
+			p.state = StateHospital
+			retrotrack.Stop() // Kill music on hospitalization
+		} else {
+			p.invulFrames = 45
+		}
 
 		if isDebugMode {
-			fmt.Printf("HIT! Health: %d | Pos Ejected\n", p.health)
+			fmt.Printf("HIT! Health: %d\n", p.health)
 		}
 	}
 }
@@ -181,13 +203,18 @@ func (p *Player) OnCollision(other Entity) {
 
 func (p *Player) updateAnimation(moving bool) {
 	p.frameTick++
+	if p.state == StateHospital {
+		p.frame = 14 // Assuming frame 14 is a 'knocked out' sprite
+		return
+	}
+
 	if p.state == StateRiding {
 		if moving {
 			if p.frameTick%8 == 0 {
 				switch p.dir {
-				case 3, 2: // Side
+				case 3, 2:
 					p.frame = (p.frame + 1) % 3
-				case 1, 0: // Vertical
+				case 1, 0:
 					if p.velY < 0 {
 						if p.frame < 4 || p.frame > 5 {
 							p.frame = 4
@@ -231,26 +258,38 @@ func (p *Player) DrawWithCamera(screen *ebiten.Image, cam *Camera) {
 	const size = 32
 	op := &ebiten.DrawImageOptions{}
 
+	// If hospitalized, rotate the player 90 degrees to look like they are lying down
+	if p.state == StateHospital {
+		op.GeoM.Rotate(math.Pi / 2)
+		op.GeoM.Translate(size, 0)
+	}
+
+	// Handle flipping for Left direction
 	if p.dir == 2 {
 		op.GeoM.Scale(-1, 1)
 		op.GeoM.Translate(size, 0)
 	}
 
+	// 1. Move to world position relative to camera
 	op.GeoM.Translate(p.x-cam.X, p.y-cam.Y)
+
+	// 2. APPLY GLOBAL ZOOM
+	op.GeoM.Scale(float64(zoom), float64(zoom))
+
 	sx := p.frame * size
-	screen.DrawImage(p.img.SubImage(image.Rect(sx, 0, sx+size, size)).(*ebiten.Image), op)
+	sub := p.img.SubImage(image.Rect(sx, 0, sx+size, size)).(*ebiten.Image)
+	screen.DrawImage(sub, op)
 
 	// --- DEBUG HITBOX ---
 	if isDebugMode {
-		// Cyan outline for player
 		vector.StrokeRect(screen,
-			float32(p.x-cam.X),
-			float32(p.y-cam.Y),
-			float32(p.w),
-			float32(p.h),
-			1, // Stroke width
+			float32((p.x-cam.X)*float64(zoom)),
+			float32((p.y-cam.Y)*float64(zoom)),
+			float32(p.w*float64(zoom)),
+			float32(p.h*float64(zoom)),
+			1,
 			color.RGBA{0, 255, 255, 255},
-			false, // don't use anti-alias for hitboxes (sharper)
+			false,
 		)
 	}
 }

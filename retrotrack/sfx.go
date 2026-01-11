@@ -26,7 +26,21 @@ func PlayStartSound() {
 	if context == nil {
 		return
 	}
-	notes := []float64{261.63, 329.63, 392.00, 523.25}
+	notes := []float64{261.63, 329.63, 392.00, 523.25, 392.00, 587.33}
+	noteLen := 0.12
+	var combinedBuf []float64
+	for _, f := range notes {
+		combinedBuf = append(combinedBuf, generateNoteBuf(f, noteLen, "square", 0.2)...)
+	}
+	p := context.NewPlayerFromBytes(floatToPCM(combinedBuf))
+	p.Play()
+}
+
+func PlayCityStartSound() {
+	if context == nil {
+		return
+	}
+	notes := []float64{261.63, 329.63, 261.63, 392.00, 261.63, 523.25}
 	noteLen := 0.12
 	var combinedBuf []float64
 	for _, f := range notes {
