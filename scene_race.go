@@ -34,10 +34,9 @@ type RaceScene struct {
 	fader     *Fader
 	isExiting bool
 
-	// CPU entities
-	taxiManager *TaxiManager
-
-	//Colllision System
+	// CPU entities + Collision System
+	taxiManager  *TaxiManager
+	npcManager   *NPCManager
 	collisionSys *CollisionSystem
 }
 
@@ -59,13 +58,15 @@ func NewRaceScene(game *Game, mfest *Manifest) *RaceScene {
 	scene := &RaceScene{
 		game:         game,
 		hud:          NewHUDOverlay(),
-		player:       NewPlayer(game.assets.BikerImage, 160, 400, 32, 32),
+		player:       NewPlayer(game.assets.BikerImage, 50, 400, 32, 32),
 		mapData:      m,
 		mapDraw:      renderer,
 		fader:        NewFader(0, 0.5), // <--- Start at 1.0 (fully black)
 		collisionSys: &CollisionSystem{game: game},
 		manifest:     mfest,
 	}
+
+	scene.npcManager = NewNPCManager(160, 420, scene)
 
 	worldW := m.Width * m.TileWidth * scale
 	worldH := m.Height * m.TileHeight * scale
@@ -169,9 +170,16 @@ func (s *RaceScene) Update() error {
 	// C. Update Taxis (Movement & internal timers)
 	s.taxiManager.Update(s.player.x, s.player.y)
 
+	// NEW: Update NPCs
+	if s.npcManager != nil {
+		// Pass manifest for AI targets and HUD time for their finish times
+		// s.npcManager.Update(s.manifest, s.taxiManager.taxis, s, s.hud.timer.Seconds())
+		s.npcManager.Update(s.manifest, s.taxiManager.taxis, s, s.collide, 666.0)
+	}
+
 	// D. Resolve Entity Collisions (Player vs Taxis, Taxi vs Taxi)
 	// This uses the collision_system.go logic we discussed
-	s.collisionSys.Update(s.player, s.taxiManager.taxis, s.collide)
+	s.collisionSys.Update(s.player, s.taxiManager.taxis, s.npcManager.Bikers, s.collide)
 
 	s.hud.health = float32(s.player.health) / 100.0
 	s.hud.cash = s.player.cash
@@ -258,7 +266,12 @@ func (s *RaceScene) Draw(screen *ebiten.Image) {
 			cp.Draw(screen, s.camera) // This uses the Draw method in manifest.go
 		}
 	}
-
+	// 3. RIVAL NPC BIKERS
+	if s.npcManager != nil {
+		// We use the player's biker image as the base,
+		// the NPC Draw function handles the color tinting.
+		s.npcManager.Draw(screen, s.camera, s.game.assets.BikerImage)
+	}
 	//ENTITIES
 	// s.player.Draw(screen) // this was the non camera way to draw
 	s.player.DrawWithCamera(screen, s.camera)
@@ -369,4 +382,34 @@ func (s *RaceScene) drawCollisionDebug(screen *ebiten.Image) {
 			}
 		}
 	}
+}
+
+// Returns the Tile GID at a specific world coordinate for a specific layer name
+func (s *RaceScene) getTileIDAt(worldX, worldY float64, layerName string) int {
+	tx, ty := int(worldX/32), int(worldY/32)
+
+	// Boundary Check
+	if tx < 0 || tx >= s.mapData.Width || ty < 0 || ty >= s.mapData.Height {
+		return 0
+	}
+
+	// Use the existing recursive function to find the layer
+	layer := findLayerRecursive(s.mapData.Layers, layerName)
+	if layer == nil {
+		return 0
+	}
+
+	idx := ty*s.mapData.Width + tx
+	if idx >= 0 && idx < len(layer.Data) {
+		// FIX: Cast the uint32 value to int to match function signature
+		return int(layer.Data[idx])
+	}
+
+	return 0
+}
+
+// Checks if the tile at Layer 3 (Blocked) has a non-zero GID
+func (s *RaceScene) isTileBlocked(worldX, worldY float64) bool {
+	blockedID := s.getTileIDAt(worldX, worldY, "COLLIDE-Road and Sidewalks BLOCKED")
+	return blockedID != 0
 }
