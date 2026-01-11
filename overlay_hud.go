@@ -34,8 +34,8 @@ func (h *HUDOverlay) Update(paused bool) {
 
 func (h *HUDOverlay) Draw(screen *ebiten.Image) {
 	// 1. Top Bar Alpha Plate (Heavier alpha for contrast)
-	barHeight := float32(40 * zoom)
-	vector.DrawFilledRect(screen, 0, 0, float32(screen.Bounds().Dx()), barHeight, color.RGBA{0, 0, 0, 180}, false)
+	barHeight := float32(25 * zoom)
+	vector.DrawFilledRect(screen, 0, 0, float32(screen.Bounds().Dx()), barHeight, color.RGBA{0, 0, 0, 220}, false)
 
 	// 2. Draw 4 Big Hearts (3x Scale)
 	maxHearts := 4
@@ -56,13 +56,13 @@ func (h *HUDOverlay) Draw(screen *ebiten.Image) {
 
 	// 3. Stats Text
 	timeStr := h.elapsedTimeStr()
-	ebitenutil.DebugPrintAt(screen, timeStr, 110*zoom, 12*zoom)
+	ebitenutil.DebugPrintAt(screen, timeStr, 110*zoom, 5*zoom)
 
 	chkStr := fmt.Sprintf("CHK %d/%d", h.checkpoints, h.maxCheck)
-	ebitenutil.DebugPrintAt(screen, chkStr, 210*zoom, 12*zoom)
+	ebitenutil.DebugPrintAt(screen, chkStr, 210*zoom, 5*zoom)
 
 	cashStr := fmt.Sprintf("$ %d", h.cash)
-	ebitenutil.DebugPrintAt(screen, cashStr, 290*zoom, 12*zoom)
+	ebitenutil.DebugPrintAt(screen, cashStr, 290*zoom, 5*zoom)
 
 	// 4. Hospital State Wash
 	if h.health <= 0 {

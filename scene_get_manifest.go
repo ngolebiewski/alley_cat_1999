@@ -38,6 +38,7 @@ func (s *GetManifestScene) Update() error {
 		if s.animTime >= 1.0 {
 			s.animTime = 1.0
 			s.animDone = true
+			retrotrack.PlayManifestSound()
 		}
 	}
 

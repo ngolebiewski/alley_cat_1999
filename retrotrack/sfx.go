@@ -50,6 +50,20 @@ func PlayCityStartSound() {
 	p.Play()
 }
 
+func PlayManifestSound() {
+	if context == nil {
+		return
+	}
+	notes := []float64{130.56, 261.63, 392.00, 523.25}
+	noteLen := 0.16
+	var combinedBuf []float64
+	for _, f := range notes {
+		combinedBuf = append(combinedBuf, generateNoteBuf(f, noteLen, "square", 0.2)...)
+	}
+	p := context.NewPlayerFromBytes(floatToPCM(combinedBuf))
+	p.Play()
+}
+
 func PlayCrash() {
 	if context == nil {
 		return
