@@ -1,5 +1,7 @@
 # Alley Cat 1999
 
+![Alley Cat 1999 title and biker](/art/alleycat-1999-splash.jpg)
+
 **For Ebitengine 2025 Holiday Hack 2025 Game Jam**
 
 A demo of an Alley Cat bike messenger style racing game. In the future: BRPG a bicycle role playing game! Making this demo as part of the Ebitengine 2025 Holiday Hack 2025 Game jam for an idea that I've had for a while.
