@@ -4,7 +4,6 @@ import (
 	_ "image/png"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/ngolebiewski/alley_cat_1999/retrotrack"
 )
@@ -39,7 +38,7 @@ func (s *TitleScene) Update() error {
 }
 
 func (s *TitleScene) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, "Alley Cat 1999\nPress Space or Tap to Start")
+	// ebitenutil.DebugPrint(screen, "'F' for Full Screen\nPress Space or Tap to Start")
 
 	op := &ebiten.DrawImageOptions{}
 	size := s.img.Bounds().Size()

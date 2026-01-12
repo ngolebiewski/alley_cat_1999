@@ -185,9 +185,18 @@ Getting the Checkpoints up and running is wild, I feel like the game is really c
 
 --
  Converted an m4a audio file to ffmpeg -i 2026-01-11_09-56-01.m4a the-reveal.ogg
- guitar by Matt
-
+ guitar by Matt. However don't have time to get it in before the jam is due.
 --
+
+### Sun Jan 11 at 10:00PM
+Ok, time to take out what is isn't working: NPC bikers!
+Finesse the game over scenes and put some instructions in.
+Maybe a few sounds for the end scenes.
+Submit to itch!
+
+
+
+
 
  # Special Thanks
  - Matt Golebiewski / Guitar

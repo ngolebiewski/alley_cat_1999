@@ -29,7 +29,6 @@ type GetManifestScene struct {
 }
 
 func NewGetManifestScene(game *Game) *GetManifestScene {
-	fmt.Println("--- DEBUG: STARTING MANIFEST SCENE ---")
 	tileset := game.assets.TilesetImage
 
 	// 1. Load map just to get checkpoint data
@@ -63,7 +62,6 @@ func (s *GetManifestScene) Update() error {
 			s.animTime = 1.0
 			s.animDone = true
 			retrotrack.PlayManifestSound()
-			fmt.Println("DEBUG: Animation finished, sound played.")
 		}
 	}
 

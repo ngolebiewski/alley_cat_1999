@@ -70,7 +70,7 @@ func (s *RaceScene) isButtonPressed(label string) bool {
 		r = image.Rect(270*zoom, 170*zoom, 310*zoom, 210*zoom)
 	case "B":
 		r = image.Rect(220*zoom, 170*zoom, 260*zoom, 210*zoom) // Fixed X coordinates
-	case "START":
+	case "PAUSE":
 		r = image.Rect(130*zoom, 210*zoom, 190*zoom, 235*zoom)
 	}
 	for _, id := range touches {

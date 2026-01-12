@@ -41,7 +41,7 @@ func (s *EndScene) Update() error {
 
 func (s *EndScene) Draw(screen *ebiten.Image) {
 	results := fmt.Sprintf(
-		"RACE OVER\n\n"+
+		"**GREAT RACING!**\n\n"+
 			"YOUR TIME: %s\n"+
 			"CASH EARNED: $%d\n\n"+
 			"--- Leaderboard ---\n"+
@@ -50,8 +50,9 @@ func (s *EndScene) Draw(screen *ebiten.Image) {
 			"NG 01:30:45\n"+
 			"HH 01:34:12\n"+
 			"DFL: DT\n\n"+
-			"Press [ENTER] to Restart\n\n"+
-			"Game: https://github.com/ngolebiewski/alley_cat_1999",
+			"Press [ENTER] to Restart\n"+
+			"Game by Nick Golebiewski\n"+
+			"https://github.com/ngolebiewski/alley_cat_1999",
 		s.time, s.cash,
 	)
 

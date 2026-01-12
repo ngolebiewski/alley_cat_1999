@@ -46,8 +46,8 @@ func (s *GameOverScene) Update() error {
 }
 
 func (s *GameOverScene) Draw(screen *ebiten.Image) {
-	screen.Fill(color.RGBA{50, 0, 0, 255}) // Dark red background
+	screen.Fill(color.RGBA{100, 0, 0, 255}) // Dark red background
 
-	msg := "GAME OVER\n\nPLAY AGAIN?"
+	msg := "OUCH! - GAME OVER\n\nPLAY SCENE AGAIN?"
 	ebitenutil.DebugPrintAt(screen, msg, 80, 100)
 }

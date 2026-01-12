@@ -58,7 +58,7 @@ func NewRaceScene(game *Game, mfest *Manifest) *RaceScene {
 	scene := &RaceScene{
 		game:         game,
 		hud:          NewHUDOverlay(),
-		player:       NewPlayer(game.assets.BikerImage, 50, 400, 32, 32),
+		player:       NewPlayer(game.assets.BikerImage, 50, 1630, 32, 32), // player:       NewPlayer(game.assets.BikerImage, 50, 400, 32, 32), // good for the TEST tilemap
 		mapData:      m,
 		mapDraw:      renderer,
 		fader:        NewFader(0, 0.5), // <--- Start at 1.0 (fully black)

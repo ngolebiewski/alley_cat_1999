@@ -108,7 +108,7 @@ func (s *RaceScene) drawPauseOverlay(screen *ebiten.Image) {
 
 	// 2. Draw the list
 	yOff := 50
-	ebitenutil.DebugPrintAt(screen, "--- MISSION MANIFEST (PAUSED) ---", 40, yOff)
+	ebitenutil.DebugPrintAt(screen, "--- ALLEY CAT RACE MANIFEST (PAUSED) ---", 40, yOff)
 	yOff += 30
 
 	if s.manifest != nil {

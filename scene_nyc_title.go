@@ -37,13 +37,13 @@ func (s *TitleSceneNYC) Update() error {
 }
 
 func (s *TitleSceneNYC) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, "STAGE 1\nPress Space or Tap to Start")
+	ebitenutil.DebugPrint(screen, "STAGE 1: Bike Messenger Race in NYC.\nControls: Arrows/touch move.\n(B) dismount bike and walk. (Space)/(A): change dir\n(Enter): Pause and see Manifest. (F): Full Screen")
 
 	op := &ebiten.DrawImageOptions{}
 	size := s.img.Bounds().Size()
 	op.GeoM.Translate(
 		float64((screenWidth-size.X)/2),
-		float64((screenHeight-size.Y)/2),
+		float64((screenHeight-size.Y)-10),
 	)
 	screen.DrawImage(s.img, op)
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="100" height="75" tilewidth="16" tileheight="16" infinite="0" nextlayerid="10" nextobjectid="237">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="100" height="75" tilewidth="16" tileheight="16" infinite="0" nextlayerid="10" nextobjectid="241">
  <editorsettings>
   <export target="../../assets/nyc_1..tmj" format="json"/>
  </editorsettings>
@@ -40,9 +40,9 @@
 2,2,2,2,2,2,2,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,2,2,2,2,2,2,2,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,2,2,2,2,2,2,2,
 2,2,2,2,2,2,2,210,210,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,210,10,2,2,2,2,2,2,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,211,210,211,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,2,2,2,2,2,2,2,
 2,2,2,2,2,2,2,210,210,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,210,10,2,2,2,2,2,2,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,210,2,2,2,2,2,2,2,
-2,2,2,2,2,2,2,210,210,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,210,10,2,2,2,2,2,2,210,210,0,0,0,0,0,0,0,20,20,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,210,210,2,2,2,2,2,2,2,
-2,2,2,2,2,2,2,210,210,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,210,10,2,2,2,2,2,2,210,210,0,0,0,0,0,0,0,184,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,210,210,2,2,2,2,2,2,2,
-2,2,2,2,2,2,2,210,210,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,210,10,2,2,2,2,2,2,210,210,0,0,0,0,0,0,0,184,184,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,210,210,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,210,210,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,210,10,2,2,2,2,2,2,210,210,0,0,0,0,0,0,0,20,20,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,185,186,187,184,210,210,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,210,210,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,210,10,2,2,2,2,2,2,210,210,0,0,0,0,0,0,0,184,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,184,185,186,187,210,210,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,210,210,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,210,10,2,2,2,2,2,2,210,210,0,0,0,0,0,0,0,184,184,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,185,186,187,184,210,210,2,2,2,2,2,2,2,
 2,2,2,2,2,2,2,210,210,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,210,10,2,2,2,2,2,2,210,210,0,0,0,0,0,0,0,184,184,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,210,210,2,2,2,2,2,2,2,
 2,2,2,2,2,2,2,210,210,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,29,29,29,30,19,19,0,0,0,0,0,210,10,2,2,2,2,2,2,210,210,0,0,0,0,0,0,0,184,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,210,210,2,2,2,2,2,2,2,
 2,2,2,2,2,2,2,210,210,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,29,187,20,30,20,19,0,0,0,0,0,210,10,2,2,2,2,2,2,210,210,0,0,0,0,0,0,0,184,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,210,210,2,2,2,2,2,2,2,
@@ -358,9 +358,9 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,111,0,111,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,53,53,53,53,53,53,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,42,42,42,42,42,42,0,0,0,0,0,0,110,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,144,0,0,0,168,0,0,0,0,0,0,0,0,0,0,0,0,0,80,0,0,110,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,42,42,42,42,42,42,117,117,117,117,117,0,111,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,117,117,117,117,117,0,0,0,0,0,0,0,0,0,0,0,0,0,0,169,0,0,0,0,0,53,53,53,53,53,53,53,53,53,53,0,111,0,0,0,0,0,0,184,185,186,187,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,42,42,42,42,42,42,117,117,117,117,117,53,53,53,53,53,53,53,53,0,0,0,0,0,0,0,0,0,0,0,0,117,117,117,117,117,0,0,0,0,0,0,0,0,0,0,0,112,0,0,53,53,53,0,185,185,0,117,117,0,117,117,0,117,117,0,53,53,53,53,53,53,53,53,184,185,186,187,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,42,42,42,42,42,42,117,117,117,117,117,117,117,117,117,117,117,117,117,0,0,0,0,0,0,0,0,0,0,0,0,117,117,117,117,117,0,0,0,0,0,0,0,0,0,0,0,111,0,0,149,149,149,0,187,187,0,117,117,0,117,117,0,117,117,0,42,42,42,42,42,42,42,42,184,185,186,187,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,42,42,42,42,42,42,117,117,117,117,117,0,111,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,117,117,117,117,117,0,0,0,0,0,0,0,0,0,0,0,0,0,0,169,0,0,0,0,0,53,53,53,53,53,53,53,53,53,53,0,111,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,42,42,42,42,42,42,117,117,117,117,117,53,53,53,53,53,53,53,53,0,0,0,0,0,0,0,0,0,0,0,0,117,117,117,117,117,0,0,0,0,0,0,0,0,0,0,0,112,0,0,53,53,53,0,185,185,0,117,117,0,117,117,0,117,117,0,53,53,53,53,53,53,53,53,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,42,42,42,42,42,42,117,117,117,117,117,117,117,117,117,117,117,117,117,0,0,0,0,0,0,0,0,0,0,0,0,117,117,117,117,117,0,0,0,0,0,0,0,0,0,0,0,111,0,0,149,149,149,0,187,187,0,117,117,0,117,117,0,117,117,0,42,42,42,42,42,42,42,42,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,42,42,42,42,42,42,117,117,117,117,117,117,117,117,117,117,117,117,117,0,0,0,0,0,0,0,0,0,0,0,0,117,117,117,117,117,0,0,0,0,0,0,0,0,0,0,53,53,53,53,149,149,149,0,0,0,0,117,117,0,0,0,0,0,0,0,42,42,42,42,42,42,42,42,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,42,42,42,42,42,42,117,117,117,117,117,117,117,117,117,117,117,117,117,0,0,0,0,0,0,0,0,0,0,0,0,117,117,117,117,117,0,0,0,0,0,0,0,0,0,0,42,42,42,42,149,149,149,0,0,0,0,117,117,0,0,0,0,0,0,0,42,42,42,42,42,42,42,42,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,149,149,149,149,42,42,42,42,42,42,117,117,117,117,117,117,117,117,117,117,117,117,117,0,0,0,0,0,0,0,0,0,0,0,0,117,117,117,117,117,0,0,0,0,0,0,0,0,0,0,42,42,42,42,149,149,149,0,0,0,0,117,117,149,149,0,149,149,0,149,42,42,42,42,42,42,42,42,149,149,149,149,0,0,0,0,0,0,0,0,0,
@@ -645,12 +645,6 @@
    </properties>
    <point/>
   </object>
-  <object id="132" name="taxi" x="188" y="841">
-   <properties>
-    <property name="direction" value="LEFT"/>
-   </properties>
-   <point/>
-  </object>
   <object id="133" name="taxi" x="233" y="820">
    <properties>
     <property name="direction" value="LEFT"/>
@@ -675,25 +669,7 @@
    </properties>
    <point/>
   </object>
-  <object id="137" name="taxi" x="342" y="818">
-   <properties>
-    <property name="direction" value="LEFT"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="138" name="taxi" x="882" y="806">
-   <properties>
-    <property name="direction" value="LEFT"/>
-   </properties>
-   <point/>
-  </object>
   <object id="139" name="taxi" x="879" y="832.5">
-   <properties>
-    <property name="direction" value="LEFT"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="140" name="taxi" x="841" y="807">
    <properties>
     <property name="direction" value="LEFT"/>
    </properties>
@@ -729,37 +705,7 @@
    </properties>
    <point/>
   </object>
-  <object id="147" name="taxi" x="1198.5" y="839.5">
-   <properties>
-    <property name="direction" value="LEFT"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="148" name="taxi" x="1500" y="837">
-   <properties>
-    <property name="direction" value="LEFT"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="149" name="taxi" x="1360" y="834">
-   <properties>
-    <property name="direction" value="LEFT"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="150" name="taxi" x="1301" y="781">
-   <properties>
-    <property name="direction" value="LEFT"/>
-   </properties>
-   <point/>
-  </object>
   <object id="151" name="taxi" x="1421" y="763">
-   <properties>
-    <property name="direction" value="LEFT"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="152" name="taxi" x="1423" y="817">
    <properties>
     <property name="direction" value="LEFT"/>
    </properties>
@@ -771,21 +717,9 @@
    </properties>
    <point/>
   </object>
-  <object id="154" name="taxi" x="1524" y="767">
-   <properties>
-    <property name="direction" value="LEFT"/>
-   </properties>
-   <point/>
-  </object>
   <object id="155" name="taxi" x="1295" y="820">
    <properties>
     <property name="direction" value="LEFT"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="156" name="taxi" x="852" y="88">
-   <properties>
-    <property name="direction" value="DOWN"/>
    </properties>
    <point/>
   </object>
@@ -855,31 +789,7 @@
    </properties>
    <point/>
   </object>
-  <object id="168" name="taxi" x="871" y="221">
-   <properties>
-    <property name="direction" value="DOWN"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="169" name="taxi" x="848" y="415">
-   <properties>
-    <property name="direction" value="RIGHT"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="170" name="taxi" x="884" y="447">
-   <properties>
-    <property name="direction" value="RIGHT"/>
-   </properties>
-   <point/>
-  </object>
   <object id="174" name="taxi" x="856" y="596">
-   <properties>
-    <property name="direction" value="DOWN"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="175" name="taxi" x="886" y="573">
    <properties>
     <property name="direction" value="DOWN"/>
    </properties>
@@ -909,25 +819,7 @@
    </properties>
    <point/>
   </object>
-  <object id="180" name="taxi" x="363" y="1168">
-   <properties>
-    <property name="direction" value="RIGHT"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="181" name="taxi" x="202" y="1174">
-   <properties>
-    <property name="direction" value="RIGHT"/>
-   </properties>
-   <point/>
-  </object>
   <object id="188" name="taxi" x="88" y="1181">
-   <properties>
-    <property name="direction" value="RIGHT"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="189" name="taxi" x="494" y="1175">
    <properties>
     <property name="direction" value="RIGHT"/>
    </properties>
@@ -957,19 +849,7 @@
    </properties>
    <point/>
   </object>
-  <object id="195" name="taxi" x="977" y="1134">
-   <properties>
-    <property name="direction" value="RIGHT"/>
-   </properties>
-   <point/>
-  </object>
   <object id="196" name="taxi" x="1260" y="1157">
-   <properties>
-    <property name="direction" value="RIGHT"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="197" name="taxi" x="1161" y="1183">
    <properties>
     <property name="direction" value="RIGHT"/>
    </properties>
@@ -1011,19 +891,7 @@
    </properties>
    <point/>
   </object>
-  <object id="204" name="taxi" x="1081" y="426">
-   <properties>
-    <property name="direction" value="RIGHT"/>
-   </properties>
-   <point/>
-  </object>
   <object id="205" name="taxi" x="991" y="428">
-   <properties>
-    <property name="direction" value="RIGHT"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="206" name="taxi" x="1037" y="444">
    <properties>
     <property name="direction" value="RIGHT"/>
    </properties>
@@ -1035,43 +903,13 @@
    </properties>
    <point/>
   </object>
-  <object id="208" name="taxi" x="1525" y="424">
-   <properties>
-    <property name="direction" value="RIGHT"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="209" name="taxi" x="539" y="405">
-   <properties>
-    <property name="direction" value="RIGHT"/>
-   </properties>
-   <point/>
-  </object>
   <object id="212" name="taxi" x="314" y="430">
    <properties>
     <property name="direction" value="RIGHT"/>
    </properties>
    <point/>
   </object>
-  <object id="213" name="taxi" x="159" y="398">
-   <properties>
-    <property name="direction" value="RIGHT"/>
-   </properties>
-   <point/>
-  </object>
   <object id="215" name="taxi" x="17" y="455">
-   <properties>
-    <property name="direction" value="RIGHT"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="216" name="taxi" x="77" y="409">
-   <properties>
-    <property name="direction" value="RIGHT"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="217" name="taxi" x="78" y="439">
    <properties>
     <property name="direction" value="RIGHT"/>
    </properties>
@@ -1084,12 +922,6 @@
    <point/>
   </object>
   <object id="220" name="taxi" x="122" y="424">
-   <properties>
-    <property name="direction" value="RIGHT"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="222" name="taxi" x="206" y="408">
    <properties>
     <property name="direction" value="RIGHT"/>
    </properties>
@@ -1110,12 +942,6 @@
   <object id="227" name="taxi" x="754" y="415">
    <properties>
     <property name="direction" value="RIGHT"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="229" name="taxi" x="763" y="815.5">
-   <properties>
-    <property name="direction" value="LEFT"/>
    </properties>
    <point/>
   </object>
@@ -1144,6 +970,24 @@
    <point/>
   </object>
   <object id="236" name="taxi" x="11" y="307">
+   <properties>
+    <property name="direction" value="UP"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="237" name="taxi" x="345.333" y="752.667">
+   <properties>
+    <property name="direction" value="LEFT"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="238" name="taxi" x="17.3333" y="791.333">
+   <properties>
+    <property name="direction" value="LEFT"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="239" name="taxi" x="54" y="646">
    <properties>
     <property name="direction" value="UP"/>
    </properties>
