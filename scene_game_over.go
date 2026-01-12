@@ -17,6 +17,7 @@ type GameOverScene struct {
 }
 
 func NewGameOverScene(game *Game, manifest *Manifest) *GameOverScene {
+	resetManifestCheckins(manifest) // since we are doing the same manifest, we need to reset the checkins
 	return &GameOverScene{game: game, manifest: manifest}
 }
 

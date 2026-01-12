@@ -34,7 +34,9 @@ func NewGetManifestScene(game *Game) *GetManifestScene {
 
 	// 1. Load map just to get checkpoint data
 	// We do this here so we can show the names on screen before the race starts
-	m, err := tiled.LoadMapFS(embeddedAssets, "assets/nyc_1_TEST..tmj")
+
+	// m, err := tiled.LoadMapFS(embeddedAssets, "assets/nyc_1_TEST..tmj")
+	m, err := tiled.LoadMapFS(embeddedAssets, "assets/nyc_1..tmj")
 	if err != nil {
 		fmt.Printf("DEBUG ERROR: Could not load map: %v\n", err)
 		panic(err)

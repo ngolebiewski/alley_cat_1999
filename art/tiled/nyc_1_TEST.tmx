@@ -213,12 +213,7 @@
    </properties>
    <point/>
   </object>
-  <object id="4" name="taxi" x="418" y="56.5">
-   <properties>
-    <property name="direction" value="LEFT"/>
-   </properties>
-   <point/>
-  </object>
+  <object id="4" template="taxi.tx" x="418" y="56.5"/>
   <object id="5" name="taxi" x="23.5" y="50.5">
    <properties>
     <property name="direction" value="LEFT"/>

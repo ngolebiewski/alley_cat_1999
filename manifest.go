@@ -103,7 +103,7 @@ func (cp *Checkpoint) Draw(screen *ebiten.Image, cam *Camera) {
 	// 2. ONLY draw indicators if not complete
 	if !cp.IsComplete {
 		bob := math.Sin(cp.Client.BobTimer) * 4
-		indicator := "?"
+		indicator := "CHECKPOINT"
 		if cp.IsFinishLine {
 			indicator = "FINISH" // Visual hint for the last stop
 		}
@@ -127,4 +127,10 @@ func makePeople(spritesheet *ebiten.Image) []*ebiten.Image {
 		people = append(people, spritesheet.SubImage(rect).(*ebiten.Image))
 	}
 	return people
+}
+
+func resetManifestCheckins(m *Manifest) {
+	for i := range m.Checkpoints {
+		m.Checkpoints[i].IsComplete = false
+	}
 }

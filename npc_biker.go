@@ -2,14 +2,14 @@ package main
 
 import (
 	"image"
-	"image/color" // Added for hitbox color
+	"image/color"
 	"math"
 	"math/rand"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil" // Added for Name tags
-	"github.com/hajimehoshi/ebiten/v2/vector"     // Added for Hitboxes
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 	"github.com/ngolebiewski/alley_cat_1999/tiled"
 )
 
@@ -27,13 +27,16 @@ type NPCBiker struct {
 	FinalTime     float64
 	CurrentTarget *Checkpoint
 
+	// Route Logic: Unique order of checkpoints for this specific NPC
+	RouteOrder []string
+
 	// AI Logic
 	StuckTimer   int
 	LastX, LastY float64
 	ticks        int
 	animOffset   int
 
-	// Start Delay (staggered start logic)
+	// Start Delay
 	StartDelayTicks int
 
 	// Animation State
@@ -59,11 +62,24 @@ func NewNPCManager(startX, startY float64, scene *RaceScene) *NPCManager {
 		{"Yellow Jacket", []float32{1.0, 1.0, 0.4}},
 	}
 
+	// Prepare list of checkpoint names (excluding finish line)
+	var cpNames []string
+	for _, cp := range scene.manifest.Checkpoints {
+		if !cp.IsFinishLine {
+			cpNames = append(cpNames, cp.Name)
+		}
+	}
+
 	for i, config := range rivalConfigs {
 		cs := ebiten.ColorScale{}
 		cs.Scale(config.color[0], config.color[1], config.color[2], 1.0)
 
-		delay := 30 + rand.Intn(61)
+		// Create a unique shuffled route for this specific NPC
+		npcRoute := make([]string, len(cpNames))
+		copy(npcRoute, cpNames)
+		rand.Shuffle(len(npcRoute), func(i, j int) {
+			npcRoute[i], npcRoute[j] = npcRoute[j], npcRoute[i]
+		})
 
 		biker := &NPCBiker{
 			Name:            config.name,
@@ -71,12 +87,13 @@ func NewNPCManager(startX, startY float64, scene *RaceScene) *NPCManager {
 			y:               startY,
 			w:               18,
 			h:               18,
-			speed:           0.8 + (rand.Float64() * 0.4),
+			speed:           0.8 + (rand.Float64() * 0.3),
 			color:           cs,
 			Inventory:       make(map[string]bool),
+			RouteOrder:      npcRoute,
 			dir:             3,
 			animOffset:      rand.Intn(60),
-			StartDelayTicks: delay,
+			StartDelayTicks: 30 + rand.Intn(90),
 		}
 		manager.Bikers = append(manager.Bikers, biker)
 	}
@@ -95,7 +112,7 @@ func (m *NPCManager) Draw(screen *ebiten.Image, cam *Camera, img *ebiten.Image) 
 	}
 }
 
-// --- Entity Interface & Physics ---
+// --- Physics & Helpers ---
 
 func (n *NPCBiker) Bounds() image.Rectangle {
 	return image.Rect(int(n.x), int(n.y), int(n.x+n.w), int(n.y+n.h))
@@ -122,21 +139,13 @@ func (n *NPCBiker) wouldCollideAt(newX, newY float64, grid *tiled.CollisionGrid)
 	return false
 }
 
-func (n *NPCBiker) OnCollision(other Entity, grid *tiled.CollisionGrid) {
-	switch other.(type) {
-	case *Taxi:
-		n.velX, n.velY = -n.velX*1.5, -n.velY*1.5
-	}
-}
-
-// --- AI Logic ---
+// --- AI & Update ---
 
 func (n *NPCBiker) Update(manifest *Manifest, taxis []*Taxi, scene *RaceScene, grid *tiled.CollisionGrid, totalTime float64) {
 	if n.Finished {
 		return
 	}
 	n.ticks++
-
 	if n.ticks < n.StartDelayTicks {
 		return
 	}
@@ -145,15 +154,11 @@ func (n *NPCBiker) Update(manifest *Manifest, taxis []*Taxi, scene *RaceScene, g
 	n.applyManhattanAI(scene, grid, taxis)
 
 	oldX, oldY := n.x, n.y
-
 	n.x += n.velX
 	if n.wouldCollideAt(n.x, n.y, grid) {
 		n.x = oldX
 		if !n.wouldCollideAt(n.x, n.y+2, grid) {
 			n.y += 0.3
-		}
-		if !n.wouldCollideAt(n.x, n.y-2, grid) {
-			n.y -= 0.3
 		}
 	}
 
@@ -162,9 +167,6 @@ func (n *NPCBiker) Update(manifest *Manifest, taxis []*Taxi, scene *RaceScene, g
 		n.y = oldY
 		if !n.wouldCollideAt(n.x+2, n.y, grid) {
 			n.x += 0.3
-		}
-		if !n.wouldCollideAt(n.x-2, n.y, grid) {
-			n.x -= 0.3
 		}
 	}
 
@@ -186,11 +188,9 @@ func (n *NPCBiker) applyManhattanAI(scene *RaceScene, grid *tiled.CollisionGrid,
 	if n.CurrentTarget == nil {
 		return
 	}
-
-	dx := n.CurrentTarget.X - n.x
-	dy := n.CurrentTarget.Y - n.y
-
+	dx, dy := n.CurrentTarget.X-n.x, n.CurrentTarget.Y-n.y
 	moveX, moveY := 0.0, 0.0
+
 	if math.Abs(dx) > math.Abs(dy) {
 		if dx > 0 {
 			moveX = n.speed
@@ -239,8 +239,42 @@ func (n *NPCBiker) applyManhattanAI(scene *RaceScene, grid *tiled.CollisionGrid,
 			}
 		}
 	}
-
 	n.velX, n.velY = moveX, moveY
+}
+
+func (n *NPCBiker) findTarget(manifest *Manifest) {
+	// Look through the shuffled route first
+	for _, name := range n.RouteOrder {
+		if !n.Inventory[name] {
+			// Find the actual checkpoint object by name
+			for _, cp := range manifest.Checkpoints {
+				if cp.Name == name {
+					n.CurrentTarget = cp
+					return
+				}
+			}
+		}
+	}
+	// If all route checkpoints are done, go to finish line
+	for _, cp := range manifest.Checkpoints {
+		if cp.IsFinishLine {
+			n.CurrentTarget = cp
+			return
+		}
+	}
+}
+
+func (n *NPCBiker) checkCheckpoints(totalTime float64) {
+	if n.CurrentTarget == nil {
+		return
+	}
+	if math.Hypot(n.x-n.CurrentTarget.X, n.y-n.CurrentTarget.Y) < 48 {
+		n.Inventory[n.CurrentTarget.Name] = true
+		if n.CurrentTarget.IsFinishLine {
+			n.Finished = true
+			n.FinalTime = totalTime
+		}
+	}
 }
 
 func (n *NPCBiker) respawnOnRoad(scene *RaceScene, grid *tiled.CollisionGrid) {
@@ -261,7 +295,6 @@ func (n *NPCBiker) updateAnimation() {
 		n.frame = 0
 		return
 	}
-
 	if math.Abs(n.velX) > math.Abs(n.velY) {
 		if n.velX > 0 {
 			n.dir = 3
@@ -280,34 +313,6 @@ func (n *NPCBiker) updateAnimation() {
 	}
 }
 
-func (n *NPCBiker) checkCheckpoints(totalTime float64) {
-	if n.CurrentTarget == nil {
-		return
-	}
-	dist := math.Hypot(n.x-n.CurrentTarget.X, n.y-n.CurrentTarget.Y)
-	if dist < 48 {
-		n.Inventory[n.CurrentTarget.Name] = true
-		if n.CurrentTarget.IsFinishLine {
-			n.Finished = true
-			n.FinalTime = totalTime
-		}
-	}
-}
-
-func (n *NPCBiker) findTarget(manifest *Manifest) {
-	for _, cp := range manifest.Checkpoints {
-		if !cp.IsFinishLine && !n.Inventory[cp.Name] {
-			n.CurrentTarget = cp
-			return
-		}
-	}
-	for _, cp := range manifest.Checkpoints {
-		if cp.IsFinishLine {
-			n.CurrentTarget = cp
-		}
-	}
-}
-
 func (n *NPCBiker) Draw(screen *ebiten.Image, cam *Camera, playerImg *ebiten.Image) {
 	const size = 32
 	op := &ebiten.DrawImageOptions{}
@@ -321,21 +326,21 @@ func (n *NPCBiker) Draw(screen *ebiten.Image, cam *Camera, playerImg *ebiten.Ima
 	sub := playerImg.SubImage(image.Rect(sx, 0, sx+size, size)).(*ebiten.Image)
 	screen.DrawImage(sub, op)
 
-	// --- RE-ADDED DEBUG HITBOX CODE ---
 	if isDebugMode {
-		// Draw name tag above biker
 		ebitenutil.DebugPrintAt(screen, n.Name, int(n.x-cam.X), int(n.y-cam.Y-15))
+		vector.StrokeRect(screen, float32(n.x-cam.X), float32(n.y-cam.Y), float32(n.w), float32(n.h), 1, color.RGBA{255, 0, 255, 255}, false)
+	}
+}
 
-		// Draw magenta hitbox for NPCs
-		vector.StrokeRect(
-			screen,
-			float32(n.x-cam.X),
-			float32(n.y-cam.Y),
-			float32(n.w),
-			float32(n.h),
-			1,
-			color.RGBA{255, 0, 255, 255}, // Magenta
-			false,
-		)
+// OnCollision satisfies the Entity interface for the CollisionCenter
+func (n *NPCBiker) OnCollision(other Entity, grid *tiled.CollisionGrid) {
+	switch other.(type) {
+	case *Taxi:
+		// Bounce back harder when hitting a taxi
+		n.velX, n.velY = -n.velX*1.5, -n.velY*1.5
+		n.StuckTimer += 10
+	case *Player, *NPCBiker:
+		// Slight bounce when hitting other bikers or the player
+		n.velX, n.velY = -n.velX*0.5, -n.velY*0.5
 	}
 }
