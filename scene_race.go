@@ -179,7 +179,7 @@ func (s *RaceScene) Update() error {
 
 	// D. Resolve Entity Collisions (Player vs Taxis, Taxi vs Taxi)
 	// This uses the collision_system.go logic we discussed
-	s.collisionSys.Update(s.player, s.taxiManager.taxis, s.npcManager.Bikers, s.collide)
+	s.collisionSys.Update(s.player, s.taxiManager.taxis, s.npcManager.Bikers, s.collide, s.camera)
 
 	s.hud.health = float32(s.player.health) / 100.0
 	s.hud.cash = s.player.cash
@@ -267,11 +267,16 @@ func (s *RaceScene) Draw(screen *ebiten.Image) {
 		}
 	}
 	// 3. RIVAL NPC BIKERS
-	if s.npcManager != nil {
-		// We use the player's biker image as the base,
-		// the NPC Draw function handles the color tinting.
-		s.npcManager.Draw(screen, s.camera, s.game.assets.BikerImage)
-	}
+	// // Removing because the AI they run on is really ANNOYING, and decreases the fun at the moment.
+	// // A simpler approach could be good. Like setting up a node network/graph...not happening this late in the game jam!
+	// so commenting out for now. Even though it will still run in the background. Hopefully it will all still compile -Nick
+
+	// if s.npcManager != nil {
+	// 	// We use the player's biker image as the base,
+	// 	// the NPC Draw function handles the color tinting.
+	// 	s.npcManager.Draw(screen, s.camera, s.game.assets.BikerImage)
+	// }
+
 	//ENTITIES
 	// s.player.Draw(screen) // this was the non camera way to draw
 	s.player.DrawWithCamera(screen, s.camera)

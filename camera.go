@@ -1,6 +1,10 @@
 package main
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"math/rand"
+
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 type Camera struct {
 	X, Y float64
@@ -10,9 +14,11 @@ type Camera struct {
 
 	WorldW int
 	WorldH int
+
+	// Screen Shake intensity
+	Shake float64
 }
 
-// Constructor for Camera
 func NewCamera(viewW, ViewH, worldW, worldH int) *Camera {
 	return &Camera{
 		ViewportW: viewW,
@@ -22,15 +28,22 @@ func NewCamera(viewW, ViewH, worldW, worldH int) *Camera {
 	}
 }
 
-// Follow the player
+// Update handles the decay of the screen shake
+func (c *Camera) Update() {
+	if c.Shake > 0 {
+		c.Shake *= 0.9 // Reduce shake by 10% every frame
+		if c.Shake < 0.1 {
+			c.Shake = 0
+		}
+	}
+}
+
 func (c *Camera) Follow(x, y float64) {
 	c.X = x - float64(c.ViewportW)/2
 	c.Y = y - float64(c.ViewportH)/2
-
 	c.clamp()
 }
 
-// Clamp to camera bounds, i.e. don't bike off the screen.
 func (c *Camera) clamp() {
 	if c.X < 0 {
 		c.X = 0
@@ -45,13 +58,18 @@ func (c *Camera) clamp() {
 	if c.X > maxX {
 		c.X = maxX
 	}
-
 	if c.Y > maxY {
 		c.Y = maxY
 	}
 }
 
-// Camera offset to draw ops
+// Apply now includes the random shake offset
 func (c *Camera) Apply(op *ebiten.DrawImageOptions) {
-	op.GeoM.Translate(-c.X, -c.Y)
+	var offsetX, offsetY float64
+	if c.Shake > 0 {
+		// Random value between -Shake and +Shake
+		offsetX = (rand.Float64()*2 - 1) * c.Shake
+		offsetY = (rand.Float64()*2 - 1) * c.Shake
+	}
+	op.GeoM.Translate(-c.X+offsetX, -c.Y+offsetY)
 }

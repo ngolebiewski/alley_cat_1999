@@ -87,7 +87,7 @@ func NewNPCManager(startX, startY float64, scene *RaceScene) *NPCManager {
 			y:               startY,
 			w:               18,
 			h:               18,
-			speed:           0.8 + (rand.Float64() * 0.3),
+			speed:           1.5 + (rand.Float64() * 0.3),
 			color:           cs,
 			Inventory:       make(map[string]bool),
 			RouteOrder:      npcRoute,
@@ -188,32 +188,75 @@ func (n *NPCBiker) applyManhattanAI(scene *RaceScene, grid *tiled.CollisionGrid,
 	if n.CurrentTarget == nil {
 		return
 	}
+
 	dx, dy := n.CurrentTarget.X-n.x, n.CurrentTarget.Y-n.y
+	distToTarget := math.Hypot(dx, dy)
+
 	moveX, moveY := 0.0, 0.0
 
+	// 1. Primary Manhattan Direction
 	if math.Abs(dx) > math.Abs(dy) {
-		if dx > 0 {
-			moveX = n.speed
-		} else {
+		moveX = n.speed
+		if dx < 0 {
 			moveX = -n.speed
 		}
 	} else {
-		if dy > 0 {
-			moveY = n.speed
-		} else {
+		moveY = n.speed
+		if dy < 0 {
 			moveY = -n.speed
 		}
 	}
 
+	// 2. Road-Staying Logic (Only if not right next to the target)
+	if distToTarget > 64 {
+		currentTile := scene.getTileIDAt(n.x+(n.w/2), n.y+(n.h/2), "Roads and Sidewalks")
+
+		// If we are NOT on a roadway (Tile 2), try to nudge back toward it
+		if currentTile != 2 {
+			// Scan a small area around the NPC to find where the road is
+			foundRoad := false
+			offsets := []float64{-32, 32, -64, 64}
+
+			for _, off := range offsets {
+				// If moving vertically, check horizontal for road
+				if moveY != 0 {
+					if scene.getTileIDAt(n.x+off, n.y, "Roads and Sidewalks") == 2 {
+						moveX = n.speed
+						if off < 0 {
+							moveX = -n.speed
+						}
+						foundRoad = true
+						break
+					}
+				} else { // If moving horizontally, check vertical for road
+					if scene.getTileIDAt(n.x, n.y+off, "Roads and Sidewalks") == 2 {
+						moveY = n.speed
+						if off < 0 {
+							moveY = -n.speed
+						}
+						foundRoad = true
+						break
+					}
+				}
+			}
+
+			// If we are really deep in the sidewalk and can't see the road,
+			// just prioritize getting back to the center of the screen/map area
+			if !foundRoad {
+				// fallback: nudge toward middle of typical road widths
+			}
+		}
+	}
+
+	// 3. Taxi Avoidance (Keep your existing logic)
 	for _, t := range taxis {
-		if math.Hypot(n.x-t.x, n.y-t.y) < 50 {
+		if math.Hypot(n.x-t.x, n.y-t.y) < 60 {
 			if moveX != 0 {
 				moveY = n.speed
 				if t.y > n.y {
 					moveY = -n.speed
 				}
-			}
-			if moveY != 0 {
+			} else {
 				moveX = n.speed
 				if t.x > n.x {
 					moveX = -n.speed
@@ -222,23 +265,23 @@ func (n *NPCBiker) applyManhattanAI(scene *RaceScene, grid *tiled.CollisionGrid,
 		}
 	}
 
-	if n.wouldCollideAt(n.x+moveX*10, n.y+moveY*10, grid) {
+	// 4. Collision Look-ahead (Keep your existing logic)
+	if n.wouldCollideAt(n.x+moveX*15, n.y+moveY*15, grid) {
 		if moveX != 0 {
 			moveX = 0
-			if dy > 0 {
-				moveY = n.speed
-			} else {
+			moveY = n.speed
+			if dy < 0 {
 				moveY = -n.speed
 			}
 		} else {
 			moveY = 0
-			if dx > 0 {
-				moveX = n.speed
-			} else {
+			moveX = n.speed
+			if dx < 0 {
 				moveX = -n.speed
 			}
 		}
 	}
+
 	n.velX, n.velY = moveX, moveY
 }
 

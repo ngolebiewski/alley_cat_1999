@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/ngolebiewski/alley_cat_1999/tiled"
 )
 
@@ -9,7 +10,7 @@ type CollisionSystem struct {
 }
 
 // Update returns true if the player hit a taxi
-func (cs *CollisionSystem) Update(player *Player, taxis []*Taxi, rivals []*NPCBiker, grid *tiled.CollisionGrid) bool {
+func (cs *CollisionSystem) Update(player *Player, taxis []*Taxi, rivals []*NPCBiker, grid *tiled.CollisionGrid, cam *Camera) bool {
 	playerBounds := player.Bounds()
 	playerHit := false
 
@@ -24,6 +25,14 @@ func (cs *CollisionSystem) Update(player *Player, taxis []*Taxi, rivals []*NPCBi
 		if playerBounds.Overlaps(taxiBounds) {
 			player.OnCollision(taxi, grid)
 			taxi.OnCollision(player, grid)
+
+			cam.Shake = 12.0
+			vibrateOpts := &ebiten.VibrateOptions{
+				Duration:  50 * 1e6, // 50 milliseconds in nanoseconds
+				Magnitude: 1.0,      // Full strength (0.0 to 1.0)
+			}
+			ebiten.Vibrate(vibrateOpts)
+
 			playerHit = true
 		}
 
