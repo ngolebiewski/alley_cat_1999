@@ -3,6 +3,7 @@
 ![Alley Cat 1999 title and biker](/art/alleycat-1999-splash.jpg)
 
 **For Ebitengine 2025 Holiday Hack 2025 Game Jam**
+https://nickgolebiewski.itch.io/alleycat1999
 
 A demo of an Alley Cat bike messenger style racing game. In the future: BRPG a bicycle role playing game! Making this demo as part of the Ebitengine 2025 Holiday Hack 2025 Game jam for an idea that I've had for a while.
 
@@ -42,6 +43,12 @@ That works -- but a better way for when this is deplyed on Netlify is to make a 
 
 ### Build for Mac OS locally
 `go build -o ~/Desktop/alley_cat_1999`
+
+### Build the .exe for windows
+env GOOS=windows GOARCH=amd64 go build -o build/win/alleycat1999_win.exe .
+
+### and Linux
+env GOOS=linux GOARCH=amd64 go build -o build/linux/alleycat1999_linux .
 
 **Notes:**
 - 1/4/2026: Minimal shell of game runs on Netlify (title and scene changes)! [alleycat1999.netlify.app](https://alleycat1999.netlify.app/)
