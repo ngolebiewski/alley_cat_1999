@@ -2,11 +2,14 @@ package main
 
 import (
 	"image"
+	"image/color" // Added for hitbox color
 	"math"
 	"math/rand"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil" // Added for Name tags
+	"github.com/hajimehoshi/ebiten/v2/vector"     // Added for Hitboxes
 	"github.com/ngolebiewski/alley_cat_1999/tiled"
 )
 
@@ -44,7 +47,7 @@ type NPCManager struct {
 
 func NewNPCManager(startX, startY float64, scene *RaceScene) *NPCManager {
 	manager := &NPCManager{}
-	rand.Seed(time.Now().UnixNano()) // Ensure variety in delays
+	rand.Seed(time.Now().UnixNano())
 
 	rivalConfigs := []struct {
 		name  string
@@ -60,7 +63,6 @@ func NewNPCManager(startX, startY float64, scene *RaceScene) *NPCManager {
 		cs := ebiten.ColorScale{}
 		cs.Scale(config.color[0], config.color[1], config.color[2], 1.0)
 
-		// 0.5 to 1.5 second delay (at 60 FPS, that is 30 to 90 ticks)
 		delay := 30 + rand.Intn(61)
 
 		biker := &NPCBiker{
@@ -69,7 +71,7 @@ func NewNPCManager(startX, startY float64, scene *RaceScene) *NPCManager {
 			y:               startY,
 			w:               18,
 			h:               18,
-			speed:           0.8 + (rand.Float64() * 0.4), // Slower: 0.8 to 1.2 range
+			speed:           0.8 + (rand.Float64() * 0.4),
 			color:           cs,
 			Inventory:       make(map[string]bool),
 			dir:             3,
@@ -135,7 +137,6 @@ func (n *NPCBiker) Update(manifest *Manifest, taxis []*Taxi, scene *RaceScene, g
 	}
 	n.ticks++
 
-	// 1. DELAY LOGIC: Don't move if still waiting
 	if n.ticks < n.StartDelayTicks {
 		return
 	}
@@ -143,13 +144,11 @@ func (n *NPCBiker) Update(manifest *Manifest, taxis []*Taxi, scene *RaceScene, g
 	n.findTarget(manifest)
 	n.applyManhattanAI(scene, grid, taxis)
 
-	// AXIS RESOLUTION (Sliding Physics)
 	oldX, oldY := n.x, n.y
 
 	n.x += n.velX
 	if n.wouldCollideAt(n.x, n.y, grid) {
 		n.x = oldX
-		// Corner Smoothing
 		if !n.wouldCollideAt(n.x, n.y+2, grid) {
 			n.y += 0.3
 		}
@@ -161,7 +160,6 @@ func (n *NPCBiker) Update(manifest *Manifest, taxis []*Taxi, scene *RaceScene, g
 	n.y += n.velY
 	if n.wouldCollideAt(n.x, n.y, grid) {
 		n.y = oldY
-		// Corner Smoothing
 		if !n.wouldCollideAt(n.x+2, n.y, grid) {
 			n.x += 0.3
 		}
@@ -170,7 +168,6 @@ func (n *NPCBiker) Update(manifest *Manifest, taxis []*Taxi, scene *RaceScene, g
 		}
 	}
 
-	// STUCK CHECK
 	if math.Abs(n.x-n.LastX)+math.Abs(n.y-n.LastY) < 0.05 {
 		n.StuckTimer++
 	} else {
@@ -208,7 +205,6 @@ func (n *NPCBiker) applyManhattanAI(scene *RaceScene, grid *tiled.CollisionGrid,
 		}
 	}
 
-	// SWERVE: Avoid Taxis
 	for _, t := range taxis {
 		if math.Hypot(n.x-t.x, n.y-t.y) < 50 {
 			if moveX != 0 {
@@ -226,7 +222,6 @@ func (n *NPCBiker) applyManhattanAI(scene *RaceScene, grid *tiled.CollisionGrid,
 		}
 	}
 
-	// PREDICTIVE COLLISION: Look ahead
 	if n.wouldCollideAt(n.x+moveX*10, n.y+moveY*10, grid) {
 		if moveX != 0 {
 			moveX = 0
@@ -262,9 +257,8 @@ func (n *NPCBiker) respawnOnRoad(scene *RaceScene, grid *tiled.CollisionGrid) {
 }
 
 func (n *NPCBiker) updateAnimation() {
-	// Only animate if they are moving (handles the delay state)
 	if n.velX == 0 && n.velY == 0 {
-		n.frame = 0 // Idle frame
+		n.frame = 0
 		return
 	}
 
@@ -326,4 +320,22 @@ func (n *NPCBiker) Draw(screen *ebiten.Image, cam *Camera, playerImg *ebiten.Ima
 	sx := n.frame * size
 	sub := playerImg.SubImage(image.Rect(sx, 0, sx+size, size)).(*ebiten.Image)
 	screen.DrawImage(sub, op)
+
+	// --- RE-ADDED DEBUG HITBOX CODE ---
+	if isDebugMode {
+		// Draw name tag above biker
+		ebitenutil.DebugPrintAt(screen, n.Name, int(n.x-cam.X), int(n.y-cam.Y-15))
+
+		// Draw magenta hitbox for NPCs
+		vector.StrokeRect(
+			screen,
+			float32(n.x-cam.X),
+			float32(n.y-cam.Y),
+			float32(n.w),
+			float32(n.h),
+			1,
+			color.RGBA{255, 0, 255, 255}, // Magenta
+			false,
+		)
+	}
 }
