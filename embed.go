@@ -18,6 +18,8 @@ import (
 //go:embed art/aseprite_files/biker.png
 //go:embed art/aseprite_files/people.png
 //go:embed art/aseprite_files/biker.json
+//go:embed assets/NEW_nyc_spritesheet-Recovered.png
+//go:embed assets/nyc_1..tmj
 //go:embed assets/**
 
 // could embed the entire directory with 'art/**' but there are files I don't want in there to keep the build small.

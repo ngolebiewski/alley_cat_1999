@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 type Assets struct {
@@ -40,9 +39,9 @@ func LoadAssets() *Assets {
 		log.Fatal(err)
 	}
 
-	tileset, _, err := ebitenutil.NewImageFromFile("assets/NEW_nyc_spritesheet-Recovered.png")
+	tileset, err := loadImage("assets/NEW_nyc_spritesheet-Recovered.png")
 	if err != nil {
-		panic(err)
+		log.Fatal(err) // Changed to log.Fatal to match your other assets
 	}
 
 	return &Assets{

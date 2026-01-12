@@ -3,3 +3,8 @@
 # WASM related files, they auto-build in deployment, no need to track, but here to test.
 alley_cat_1999.wasm
 wasm_exec.js
+
+# Binary builds for diff operating systems
+/build
+
+*.zip

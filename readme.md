@@ -8,6 +8,9 @@ A demo of an Alley Cat bike messenger style racing game. In the future: BRPG a b
 
 My idea for the process is to make the art first, and then code the game.
 
+Thanks!
+-Nick
+
 ![Title word graphic: Alley Cat 1999](/art/screenshots/day0_title.png)
 
 
@@ -36,6 +39,9 @@ https://ebitengine.org/en/documents/webassembly.html
 2. cp $(go env GOROOT)/lib/wasm/wasm_exec.js
 
 That works -- but a better way for when this is deplyed on Netlify is to make a netlify.toml and have Netlify do the WASM build, and then clear out the wasm files from our own repo.
+
+### Build for Mac OS locally
+`go build -o ~/Desktop/alley_cat_1999`
 
 **Notes:**
 - 1/4/2026: Minimal shell of game runs on Netlify (title and scene changes)! [alleycat1999.netlify.app](https://alleycat1999.netlify.app/)
